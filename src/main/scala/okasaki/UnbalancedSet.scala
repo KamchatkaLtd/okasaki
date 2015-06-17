@@ -9,7 +9,7 @@ import scala.annotation.implicitNotFound
  *
  * Copyright (C) 2015 Kamchatka Ltd
  */
-@implicitNotFound("No member of type class Ordered in scope for ${T}")
+@implicitNotFound("No member of type class Ordered in scope for ${E}")
 class UnbalancedSet[E](implicit ord: Ordered[E]) extends Set[E, Tree[E]] {
   override def empty: Tree[E] = Empty
 
@@ -30,16 +30,16 @@ class UnbalancedSet[E](implicit ord: Ordered[E]) extends Set[E, Tree[E]] {
 
   override def insert(x: E, s: Tree[E]): Tree[E] = {
     // ex. 2.3
-    def insert1(x: E, s: Tree[E]): Option[Tree[E]] = {
+    def insertTo(s: Tree[E]): Option[Tree[E]] = {
       s match {
         case Empty => Some(SubTree(Empty, x, Empty))
         case SubTree(a, y, b) =>
-          if (ord.lt(x, y)) insert1(x, a).map(SubTree(_, y, b))
-          else if (ord.lt(y, x)) insert1(x, b).map(SubTree(a, y, _))
+          if (ord.lt(x, y)) insertTo(a).map(SubTree(_, y, b))
+          else if (ord.lt(y, x)) insertTo(b).map(SubTree(a, y, _))
           else None
       }
     }
 
-    insert1(x, s).getOrElse(s)
+    insertTo(s).getOrElse(s)
   }
 }
