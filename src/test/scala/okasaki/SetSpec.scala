@@ -22,7 +22,13 @@ abstract class SetSpec[E, S] extends Specification with ScalaCheck {
     "contain its elements" ! prop { a: Seq[E] =>
       val s = setFrom(a)
 
-      a.map(set.member(_, s)).reduce(_ && _) should beTrue
+      a.forall(set.member(_, s)) should beTrue
+    }
+
+    "not contain extra elements" ! prop { (a: Seq[E], e: E) =>
+      val s = setFrom(a)
+
+      set.member(e, s) === a.contains(e)
     }
   }
 
