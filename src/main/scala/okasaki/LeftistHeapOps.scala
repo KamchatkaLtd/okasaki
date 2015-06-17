@@ -32,6 +32,7 @@ class LeftistHeapOps[E](implicit val ord: Ordered[E]) extends Heap[E, LeftistHea
       else makeT(y, a2, merge(h1, b2))
   }
 
+  // Ex. 3.2
   override val insert: (E, LeftistHeap[E]) => LeftistHeap[E] = {
     case (x, Empty) => SubHeap(1, x, Empty, Empty)
     case (x, SubHeap(_, y, a, b)) =>
