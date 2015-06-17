@@ -3,6 +3,10 @@ package okasaki
 import scala.annotation.implicitNotFound
 
 /**
+ * Unbalanced set, based on the source at Fig. 2.9
+ *
+ * Includes ex. 2.2, 2.3, and 2.4
+ *
  * Copyright (C) 2015 Kamchatka Ltd
  */
 @implicitNotFound("No member of type class Ordered in scope for ${T}")
@@ -10,6 +14,7 @@ class UnbalancedSet[E](implicit ord: Ordered[E]) extends Set[E, Tree[E]] {
   override def empty: Tree[E] = Empty
 
   override def member(x: E, s: Tree[E]): Boolean = {
+    // ex. 2.2
     def member1(xx: E, last: Option[E], ss: Tree[E]): Boolean = {
       ss match {
         case Empty =>
@@ -23,11 +28,18 @@ class UnbalancedSet[E](implicit ord: Ordered[E]) extends Set[E, Tree[E]] {
     member1(x, None, s)
   }
 
-  override def insert(x: E, s: Tree[E]): Tree[E] = s match {
-    case Empty => SubTree(Empty, x, Empty)
-    case t@SubTree(a, y, b) =>
-      if (ord.lt(x, y)) t.copy(left = insert(x, a))
-      else if (ord.lt(y, x)) t.copy(right = insert(x, b))
-      else t
+  override def insert(x: E, s: Tree[E]): Tree[E] = {
+    // ex. 2.3
+    def insert1(x: E, s: Tree[E]): Option[Tree[E]] = {
+      s match {
+        case Empty => Some(SubTree(Empty, x, Empty))
+        case SubTree(a, y, b) =>
+          if (ord.lt(x, y)) insert1(x, a).map(SubTree(_, y, b))
+          else if (ord.lt(y, x)) insert1(x, b).map(SubTree(a, y, _))
+          else None
+      }
+    }
+
+    insert1(x, s).getOrElse(s)
   }
 }
