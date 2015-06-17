@@ -1,8 +1,18 @@
 package okasaki
 
+import scala.collection.immutable.{List => ConsList}
+
 /**
  * Copyright (C) 2015 Kamchatka Ltd
  */
+object LeftistHeapOps {
+  // Ex 3.3
+  def fromList[E, EH](l: ConsList[E])(implicit ord: Ordered[E], list: List[E], heap: Heap[E, EH]): EH = {
+    if (list.isEmpty(l)) heap.empty
+    else heap.insert(list.head(l), fromList(list.tail(l)))
+  }
+}
+
 class LeftistHeapOps[E](implicit val ord: Ordered[E]) extends Heap[E, LeftistHeap[E]] {
 
   import okasaki.LeftistHeap._
@@ -23,7 +33,10 @@ class LeftistHeapOps[E](implicit val ord: Ordered[E]) extends Heap[E, LeftistHea
   }
 
   override val insert: (E, LeftistHeap[E]) => LeftistHeap[E] = {
-    case (x, h) => merge(SubHeap(1, x, Empty, Empty), h)
+    case (x, Empty) => SubHeap(1, x, Empty, Empty)
+    case (x, SubHeap(_, y, a, b)) =>
+      if (ord.leq(x, y)) makeT(x, a, insert(y, b))
+      else makeT(y, a, insert(x, b))
   }
 
   override val findMin: (LeftistHeap[E]) => E = {
