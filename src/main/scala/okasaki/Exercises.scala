@@ -7,6 +7,8 @@ import scala.collection.immutable.{List => ConsList}
  * Copyright (C) 2015 Kamchatka Ltd
  */
 object Exercises {
+  import Tree._
+
   // ex 2.1
   @implicitNotFound("No member of type class Stack in scope for ${E}, ${ES}, ${ESS}")
   def suffixes[E, ES, ESS](list: ES)(implicit ev: Stack[E, ES], evs: Stack[ES, ESS]): ESS =

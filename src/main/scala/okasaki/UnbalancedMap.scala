@@ -9,6 +9,8 @@ import scala.annotation.implicitNotFound
  */
 @implicitNotFound("No member of type class Ordered in scope for ${K}, ${V}")
 class UnbalancedMap[K, V](implicit ord: Ordered[K]) extends FiniteMap[K, V, Tree[(K, V)]] {
+  import Tree._
+
   override def empty: Tree[(K, V)] = Empty
 
   override def lookup(k: K, m: Tree[(K, V)]): V = {
