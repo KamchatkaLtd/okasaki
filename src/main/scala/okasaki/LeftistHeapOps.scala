@@ -63,7 +63,7 @@ class LeftistHeapOps[E](implicit val ord: Ordered[E]) extends Heap[E, LeftistHea
 
   override val deleteMin: (LeftistHeap[E]) => LeftistHeap[E] = {
     case SubHeap(_, _, a, b) => merge(a, b)
-    case Empty => throw new IllegalStateException("called findMin on an empty heap")
+    case Empty => throw new IllegalStateException("called deleteMin on an empty heap")
   }
 
   private val rank: LeftistHeap[_] => Int = {
