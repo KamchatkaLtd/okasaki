@@ -1,13 +1,13 @@
 package okasaki
 
 import scala.annotation.implicitNotFound
-import scala.collection.immutable.{List => ConsList}
 
 /**
  * Copyright (C) 2015 Kamchatka Ltd
  */
 object Exercises {
   import Tree._
+  import ConsList.reverse
 
   // ex 2.1
   @implicitNotFound("No member of type class Stack in scope for ${E}, ${ES}, ${ESS}")
@@ -41,7 +41,7 @@ object Exercises {
     implicit object ListOfInt extends List[Int]
     implicit object ListOfListOfInt extends List[ConsList[Int]]
 
-    println(suffixes(ConsList(1,2,3)))
+    println(reverse(suffixes(Cons(1, Cons(2, Cons(3, ConsList.Empty))).asInstanceOf[ConsList[Int]])))
     println(complete("©", 3))
     println(almostComplete("∆", 4))
     println(almostComplete("∆", 3))

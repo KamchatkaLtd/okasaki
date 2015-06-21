@@ -1,18 +1,34 @@
 package okasaki
 
-import scala.collection.immutable.{List => ConsList}
+import scala.annotation.tailrec
 
 /**
  * Copyright (C) 2015 Kamchatka Ltd
  */
 object LeftistHeapOps {
+
   // Ex 3.3
   def fromList[E, EH](l: ConsList[E])(implicit ord: Ordered[E], list: List[E], heap: Heap[E, EH]): EH = {
-    if (list.isEmpty(l)) heap.empty
-    else heap.insert(list.head(l), fromList(list.tail(l)))
+    @tailrec
+    def pairs(l: ConsList[EH], a: ConsList[EH]): ConsList[EH] = l match {
+      case ConsList.Empty => a
+      case Cons(x, ConsList.Empty) => Cons(x, a)
+      case Cons(x, Cons(y, t)) =>
+        val xy = heap.merge(x, y)
+        pairs(t, Cons(xy, a))
+    }
+
+    def fromList1(l: ConsList[EH]): EH = l match {
+      case ConsList.Empty => heap.empty
+      case Cons(x, ConsList.Empty) => x
+      case _ => fromList1(pairs(l, ConsList.Empty))
+    }
+
+    fromList1(ConsList.map(l, (x: E) => heap.insert(x, heap.empty)))
   }
 }
 
+// Fig 3.2
 class LeftistHeapOps[E](implicit val ord: Ordered[E]) extends Heap[E, LeftistHeap[E]] {
 
   import okasaki.LeftistHeap._

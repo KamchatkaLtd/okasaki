@@ -1,19 +1,25 @@
 package okasaki
 
-import scala.collection.immutable.{List => ConsList}
-
 /**
  * Copyright (C) 2015 Kamchatka Ltd
  */
 trait List[E] extends Stack[E, ConsList[E]] {
 
-  override val empty: ConsList[E] = ConsList.empty
+  import okasaki.ConsList._
 
-  override def cons(a: E, s: ConsList[E]): ConsList[E] = a :: s
+  override val empty: ConsList[E] = Empty
 
-  override def tail(s: ConsList[E]): ConsList[E] = s.tail
+  override def cons(a: E, s: ConsList[E]): ConsList[E] = Cons(a, s)
 
-  override def isEmpty(s: ConsList[E]): Boolean = s.isEmpty
+  override def tail(s: ConsList[E]): ConsList[E] = s match {
+    case Cons(h, t) => t
+    case Empty => throw new IllegalArgumentException("tail called for an empty list")
+  }
 
-  override def head(s: ConsList[E]): E = s.head
+  override def isEmpty(s: ConsList[E]): Boolean = s == Empty
+
+  override def head(s: ConsList[E]): E = s match {
+    case Cons(h, t) => h
+    case Empty => throw new IllegalArgumentException("tail called for an empty list")
+  }
 }

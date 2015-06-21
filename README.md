@@ -28,7 +28,7 @@ We'll track progress against the Haskell code ToC (App. A):
  - [ ] Skew Binary
  - [ ] Binary (alternative)
 - [ ] Heaps
- - [ ] Leftist
+ - [x] Leftist
  - [ ] Binomial
  - [ ] Splay
  - [ ] Pairing
