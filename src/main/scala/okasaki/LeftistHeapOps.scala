@@ -8,7 +8,7 @@ import scala.annotation.tailrec
 object LeftistHeapOps {
 
   // Ex 3.3
-  def fromList[E, EH](l: ConsList[E])(implicit ord: Ordered[E], list: List[E], heap: Heap[E, EH]): EH = {
+  def fromList[E, EH](l: ConsList[E])(implicit ord: Ordered[E], heap: Heap[E, EH]): EH = {
     @tailrec
     def pairs(l: ConsList[EH], a: ConsList[EH]): ConsList[EH] = l match {
       case ConsList.Empty => a
