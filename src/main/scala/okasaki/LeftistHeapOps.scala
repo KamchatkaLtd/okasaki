@@ -36,7 +36,7 @@ class LeftistHeapOps[E](implicit val ord: Ordered[E]) extends Heap[E, LeftistHea
   override val empty: LeftistHeap[E] = Empty
 
   override val isEmpty: (LeftistHeap[E]) => Boolean = {
-    case LeftistHeap.Empty => true
+    case Empty => true
     case _ => false
   }
 
