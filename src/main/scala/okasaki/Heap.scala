@@ -6,7 +6,7 @@ package okasaki
  * Copyright (C) 2015 Kamchatka Ltd
  */
 trait Heap[E, H] {
-  implicit def ord: Ordered[E]
+  implicit def ord: Ordering[E]
 
   def empty: H
 

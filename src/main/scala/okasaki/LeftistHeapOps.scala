@@ -8,7 +8,7 @@ import scala.annotation.tailrec
 object LeftistHeapOps {
 
   // Ex 3.3
-  def fromList[E, EH](l: ConsList[E])(implicit ord: Ordered[E], heap: Heap[E, EH]): EH = {
+  def fromList[E, EH](l: ConsList[E])(implicit ord: Ordering[E], heap: Heap[E, EH]): EH = {
     @tailrec
     def pairs(l: ConsList[EH], a: ConsList[EH]): ConsList[EH] = l match {
       case ConsList.Empty => a
@@ -29,7 +29,7 @@ object LeftistHeapOps {
 }
 
 // Fig 3.2
-class LeftistHeapOps[E](implicit val ord: Ordered[E]) extends Heap[E, LeftistHeap[E]] {
+class LeftistHeapOps[E](implicit val ord: Ordering[E]) extends Heap[E, LeftistHeap[E]] {
 
   import okasaki.LeftistHeap._
 
@@ -44,7 +44,7 @@ class LeftistHeapOps[E](implicit val ord: Ordered[E]) extends Heap[E, LeftistHea
     case (h, Empty) => h
     case (Empty, h) => h
     case (h1@SubHeap(_, x, a1, b1), h2@SubHeap(_, y, a2, b2)) =>
-      if (ord.leq(x, y)) makeT(x, a1, merge(b1, h2))
+      if (ord.lteq(x, y)) makeT(x, a1, merge(b1, h2))
       else makeT(y, a2, merge(h1, b2))
   }
 
@@ -52,7 +52,7 @@ class LeftistHeapOps[E](implicit val ord: Ordered[E]) extends Heap[E, LeftistHea
   override val insert: (E, LeftistHeap[E]) => LeftistHeap[E] = {
     case (x, Empty) => SubHeap(1, x, Empty, Empty)
     case (x, SubHeap(_, y, a, b)) =>
-      if (ord.leq(x, y)) makeT(x, a, insert(y, b))
+      if (ord.lteq(x, y)) makeT(x, a, insert(y, b))
       else makeT(y, a, insert(x, b))
   }
 

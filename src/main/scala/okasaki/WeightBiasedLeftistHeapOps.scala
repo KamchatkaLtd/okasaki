@@ -1,7 +1,7 @@
 package okasaki
 
 
-class WeightBiasedLeftistHeapOps[E](implicit val ord: Ordered[E]) extends Heap[E, WeightBiasedLeftistHeap[E]] {
+class WeightBiasedLeftistHeapOps[E](implicit val ord: Ordering[E]) extends Heap[E, WeightBiasedLeftistHeap[E]] {
 
   import okasaki.WeightBiasedLeftistHeap._
 
@@ -17,14 +17,14 @@ class WeightBiasedLeftistHeapOps[E](implicit val ord: Ordered[E]) extends Heap[E
     case (Empty, h) => h
     case (h1@SubHeap(w1, x, a1, b1), h2@SubHeap(w2, y, a2, b2)) =>
       val w = w1 + w2
-      if (ord.leq(x, y)) SubHeap(w, x, a1, merge(b1, h2))
+      if (ord.lteq(x, y)) SubHeap(w, x, a1, merge(b1, h2))
       else SubHeap(w, y, a2, merge(h1, b2))
   }
 
   override val insert: (E, WeightBiasedLeftistHeap[E]) => WeightBiasedLeftistHeap[E] = {
     case (x, Empty) => SubHeap(1, x, Empty, Empty)
     case (x, SubHeap(w, y, a, b)) =>
-      if (ord.leq(x, y)) SubHeap(w + 1, x, a, insert(y, b))
+      if (ord.lteq(x, y)) SubHeap(w + 1, x, a, insert(y, b))
       else SubHeap(w + 1, y, a, insert(x, b))
   }
 

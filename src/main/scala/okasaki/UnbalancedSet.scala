@@ -9,8 +9,8 @@ import scala.annotation.implicitNotFound
  *
  * Copyright (C) 2015 Kamchatka Ltd
  */
-@implicitNotFound("No member of type class Ordered in scope for ${E}")
-class UnbalancedSet[E](implicit ord: Ordered[E]) extends Set[E, Tree[E]] {
+@implicitNotFound("No member of type class Ordering in scope for ${E}")
+class UnbalancedSet[E](implicit ord: Ordering[E]) extends Set[E, Tree[E]] {
   import Tree._
 
   override def empty: Tree[E] = Empty
