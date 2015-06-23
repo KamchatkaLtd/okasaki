@@ -53,8 +53,10 @@ trait BinomialHeap[E] extends Heap[E, BinomialHeap.BHeap[E]] {
       else insTree(link(t1, t2), merge(ts11, ts22))
   }
 
-  override def findMin: (BHeap[E]) => E = removeMinTree _ andThen {
-    case (t, _) => root(t)
+  override def findMin: (BHeap[E]) => E = {
+    case Empty => throw new IllegalStateException("called removeMinTree on an empty heap")
+    case Cons(t, Empty) => root(t)
+    case Cons(t, ts) => ord.min(root(t), findMin(ts))
   }
 
   override def deleteMin: (BHeap[E]) => BHeap[E] = removeMinTree _ andThen {
