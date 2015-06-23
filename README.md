@@ -30,7 +30,7 @@ We'll track progress against the Haskell code ToC (App. A):
 - [ ] Heaps
  - [x] Leftist
  - [x] Weight-Biased Leftist
- - [ ] Binomial
+ - [x] Binomial
  - [ ] Splay
  - [ ] Pairing
  - [ ] Lazy Pairing
