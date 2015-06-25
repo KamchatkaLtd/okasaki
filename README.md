@@ -38,9 +38,9 @@ We'll track progress against the Haskell code ToC (App. A):
  - [ ] Bootstrapped
 - [ ] Sortable Collections
  - [ ] Bottom-up Mergesort
-- [ ] Sets
+- [x] Sets
  - [x] Unbalanced
- - [ ] Red-Black
+ - [x] Red-Black
 - [ ] Finite Maps
  - [ ] Trie
  - [ ] Trie of Trees
