@@ -7,7 +7,7 @@ import org.specs2.mutable.Specification
 /**
  * Copyright (C) 2015 Kamchatka Ltd
  */
-abstract class SetSpec[E, S] extends Specification with ScalaCheck {
+trait SetSpec[E, S] extends Specification with ScalaCheck {
   def set: Set[E, S]
 
   implicit def elements: Arbitrary[E]
