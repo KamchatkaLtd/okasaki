@@ -1,15 +1,15 @@
 package okasaki
 
-import okasaki.ConsList.{Empty, reverse}
+import okasaki.ConsList.{Empty, rev_map}
 
 /**
  * Copyright (C) 2015 Kamchatka Ltd
  */
 object BinomialHeap {
 
-  case class Node[E](r: Int, e: E, c: ConsList[Node[E]])(implicit list: List[E])
+  case class Node[E](e: E, c: ConsList[Node[E]])
 
-  type BHeap[E] = ConsList[Node[E]]
+  type BHeap[E] = ConsList[(Int, Node[E])]
 }
 
 trait BinomialHeap[E] extends Heap[E, BinomialHeap.BHeap[E]] {
@@ -25,23 +25,23 @@ trait BinomialHeap[E] extends Heap[E, BinomialHeap.BHeap[E]] {
     case _ => false
   }
 
-  def rank(t: Node[E]): Int = t.r
+  def rank(t: (Int, Node[E])): Int = t._1
 
-  def root(t: Node[E]): E = t.e
+  def root(t: (Int, Node[E])): E = t._2.e
 
-  def link(t1: Node[E], t2: Node[E]): Node[E] = (t1, t2) match {
-    case (Node(r, x1, c1), Node(_, x2, c2)) =>
-      if (ord.lteq(x1, x2)) Node(r + 1, x1, Cons(t2, c1))
-      else Node(r + 1, x2, Cons(t1, c2))
+  def link(t1: (Int, Node[E]), t2: (Int, Node[E])): (Int, Node[E]) = (t1, t2) match {
+    case ((r, Node(x1, c1)), (_, Node(x2, c2))) =>
+      if (ord.lteq(x1, x2)) (r + 1, Node(x1, Cons(t2._2, c1)))
+      else (r + 1, Node(x2, Cons(t1._2, c2)))
   }
 
-  def insTree(t: Node[E], ts: BHeap[E]): BHeap[E] = ts match {
+  def insTree(t: (Int, Node[E]), ts: BHeap[E]): BHeap[E] = ts match {
     case Empty => Cons(t, Empty)
     case Cons(t1, ts1) => if (rank(t) < rank(t1)) Cons(t, ts) else insTree(link(t, t1), ts1)
   }
 
   override def insert: (E, BHeap[E]) => BHeap[E] = {
-    case (x, ts) => insTree(Node(0, x, Empty), ts)
+    case (x, ts) => insTree((0, Node(x, Empty)), ts)
   }
 
   override def merge: (BHeap[E], BHeap[E]) => BHeap[E] = {
@@ -60,10 +60,12 @@ trait BinomialHeap[E] extends Heap[E, BinomialHeap.BHeap[E]] {
   }
 
   override def deleteMin: (BHeap[E]) => BHeap[E] = removeMinTree _ andThen {
-    case (Node(_, x: E, ts1), ts2) => merge(reverse(ts1), ts2)
+    case ((r, Node(x, ts1)), ts2) => merge(rev_map(ts1, Empty, withRank(r - 1)), ts2)
   }
 
-  private def removeMinTree(h: BHeap[E]): (Node[E], BHeap[E]) = h match {
+  def withRank(r: Int)(x: Node[E]): (Int, Node[E]) = (r, x)
+
+  private def removeMinTree(h: BHeap[E]): ((Int, Node[E]), BHeap[E]) = h match {
     case Empty => throw new IllegalStateException("called removeMinTree on an empty heap")
     case Cons(t, Empty) => (t, Empty)
     case Cons(t, ts) =>
