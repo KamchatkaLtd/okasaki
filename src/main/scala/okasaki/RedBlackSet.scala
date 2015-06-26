@@ -28,6 +28,14 @@ object RedBlackSet {
     override def toString = s"T($c,$l,$e,$r)"
   }
 
+  // ex. 3.9
+  def fromOrdList[E](l: List[E]): RBTree[E] = l match {
+    case Nil => Empty
+    case x :: Nil => SubTree(R, Empty, x, Empty) // ??? not good enough
+    case _ =>
+      val halves = l.splitAt(l.size / 2)
+      SubTree(B, fromOrdList(halves._1), halves._2.head, fromOrdList(halves._2))
+  }
 }
 
 class RedBlackSet[E](implicit ord: Ordering[E]) extends Set[E, RBTree[E]] {
