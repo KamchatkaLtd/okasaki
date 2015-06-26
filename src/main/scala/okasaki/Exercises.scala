@@ -1,19 +1,16 @@
 package okasaki
 
-import scala.annotation.implicitNotFound
-
 /**
  * Copyright (C) 2015 Kamchatka Ltd
  */
 object Exercises {
-  import BinaryTree._
-  import ConsList.reverse
+
+  import okasaki.BinaryTree._
 
   // ex 2.1
-  @implicitNotFound("No member of type class Stack in scope for ${E}, ${ES}, ${ESS}")
-  def suffixes[E, ES, ESS](list: ES)(implicit ev: Stack[E, ES], evs: Stack[ES, ESS]): ESS =
-    if (ev.isEmpty(list)) evs.cons(list, evs.empty)
-    else evs.cons(list, suffixes(ev.tail(list)))
+  def suffixes[E](list: List[E]): List[List[E]] =
+    if (list.isEmpty) List(List())
+    else list :: suffixes(list.tail)
 
   // ex 2.5a
   def complete[E](x: E, d: Int): BinaryTree[E] = d match {
@@ -37,11 +34,9 @@ object Exercises {
   }
 
 
-  def main (args: Array[String]) {
-    implicit object ListOfInt extends List[Int]
-    implicit object ListOfListOfInt extends List[ConsList[Int]]
-
-    println(reverse(suffixes(Cons(1, Cons(2, Cons(3, ConsList.Empty))).asInstanceOf[ConsList[Int]])))
+  def main(args: Array[String]) {
+    val ints = List(1, 2, 3)
+    println(suffixes(ints).reverse)
     println(complete("©", 3))
     println(almostComplete("∆", 4))
     println(almostComplete("∆", 3))

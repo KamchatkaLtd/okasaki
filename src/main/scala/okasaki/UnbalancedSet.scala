@@ -18,7 +18,6 @@ class UnbalancedSet[E](implicit ord: Ordering[E]) extends Set[E, BinaryTree[E]] 
   override def member(x: E, s: BinaryTree[E]): Boolean = {
     // ex. 2.2
     def member1(last: Option[E], ss: BinaryTree[E]): Boolean = {
-      println(s"member1($last, $ss)")
       ss match {
         case Empty =>
           last.exists(y => ord.equiv(x, y))

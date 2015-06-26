@@ -8,23 +8,23 @@ import scala.annotation.tailrec
 object LeftistHeapOps {
 
   // Ex 3.3
-  def fromList[E, EH](l: ConsList[E])(implicit ord: Ordering[E], heap: Heap[E, EH]): EH = {
+  def fromList[E, EH](l: List[E])(implicit ord: Ordering[E], heap: Heap[E, EH]): EH = {
     @tailrec
-    def pairs(l: ConsList[EH], a: ConsList[EH]): ConsList[EH] = l match {
-      case ConsList.Empty => a
-      case Cons(x, ConsList.Empty) => Cons(x, a)
-      case Cons(x, Cons(y, t)) =>
+    def pairs(l: List[EH], a: List[EH]): List[EH] = l match {
+      case Nil => a
+      case x :: Nil => x :: a
+      case x :: y :: t =>
         val xy = heap.merge(x, y)
-        pairs(t, Cons(xy, a))
+        pairs(t, xy :: a)
     }
 
-    def fromList1(l: ConsList[EH]): EH = l match {
-      case ConsList.Empty => heap.empty
-      case Cons(x, ConsList.Empty) => x
-      case _ => fromList1(pairs(l, ConsList.Empty))
+    def fromList1(l: List[EH]): EH = l match {
+      case Nil => heap.empty
+      case x :: Nil => x
+      case _ => fromList1(pairs(l, Nil))
     }
 
-    fromList1(ConsList.map(l, (x: E) => heap.insert(x, heap.empty)))
+    fromList1(l.map(heap.insert(_, heap.empty)))
   }
 }
 
