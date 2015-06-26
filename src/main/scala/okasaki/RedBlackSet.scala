@@ -59,16 +59,14 @@ class RedBlackSet[E](implicit ord: Ordering[E]) extends Set[E, RBTree[E]] {
   }
 
   override def insert(x: E, s: RBTree[E]): RBTree[E] = {
-    def ins(ss: RBTree[E]): RBTree[E] = ss match {
+    def ins(ss: RBTree[E]): SubTree[E] = ss match {
       case Empty => SubTree(R, Empty, x, Empty)
-      case SubTree(color, a, y, b) =>
+      case sss@SubTree(color, a, y, b) =>
         if (ord.lt(x, y)) balance(color, ins(a), y, b)
         else if (ord.lt(y, x)) balance(color, a, y, ins(b))
-        else ss
+        else sss
     }
 
-    ins(s) match {
-      case SubTree(_, a, y, b) => SubTree(B, a, y, b)
-    }
+    ins(s).copy(c = B)
   }
 }
