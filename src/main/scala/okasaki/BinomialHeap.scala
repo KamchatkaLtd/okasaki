@@ -52,7 +52,7 @@ trait BinomialHeap[E] extends Heap[E, BinomialHeap.BHeap[E]] {
   }
 
   override def findMin: (BHeap[E]) => E = {
-    case Nil => throw new IllegalStateException("called removeMinTree on an Nil heap")
+    case Nil => throw new IllegalStateException("called removeMinTree on an empty heap")
     case t :: Nil => root(t)
     case t :: ts => ord.min(root(t), findMin(ts))
   }
@@ -64,7 +64,7 @@ trait BinomialHeap[E] extends Heap[E, BinomialHeap.BHeap[E]] {
   def withRank(r: Int)(x: Node[E]): (Int, Node[E]) = (r, x)
 
   private def removeMinTree(h: BHeap[E]): ((Int, Node[E]), BHeap[E]) = h match {
-    case Nil => throw new IllegalStateException("called removeMinTree on an Nil heap")
+    case Nil => throw new IllegalStateException("called removeMinTree on an empty heap")
     case t :: Nil => (t, Nil)
     case t :: ts =>
       removeMinTree(ts) match {
