@@ -1,6 +1,6 @@
 package okasaki
 
-import org.scalacheck.Arbitrary
+import org.scalacheck.{Arbitrary, Gen}
 import org.specs2.ScalaCheck
 import org.specs2.mutable.Specification
 
@@ -16,6 +16,8 @@ trait HeapSpec extends Specification with ScalaCheck {
 
   implicit def elements: Arbitrary[E]
 
+  implicit def heaps: Arbitrary[H] = Arbitrary(Gen.nonEmptyListOf(elements.arbitrary).map(fromList))
+
   "heap" should {
     "provide an empty heap" in {
       heap.isEmpty(heap.empty)
@@ -30,4 +32,34 @@ trait HeapSpec extends Specification with ScalaCheck {
     }
   }
 
+  "any heap" should {
+    "allow insertion" ! prop {
+      (a: E, h: H) =>
+        val hwitha = heap.insert(a, h)
+        heap.ord.lteq(heap.findMin(hwitha), a) should beTrue
+    }
+  }
+
+  "merge" should {
+    "preserve min" ! prop {
+      (h1: H, h2: H) =>
+        val h = heap.merge(h1, h2)
+        heap.ord.lteq(heap.findMin(h), heap.findMin(h1)) should beTrue
+    }
+  }
+
+  "sorting" should {
+    "be natural" ! prop {
+      (a: List[E], h: H) =>
+        val hh = fromList(a)
+        drain(hh) === a.sorted(heap.ord)
+    }
+  }
+
+  def fromList(a: List[E]): H =
+    a.foldLeft(heap.empty)((p, q) => heap.insert(q, p))
+
+  def drain(h: H): List[E] =
+    if (heap.isEmpty(h)) Nil
+    else heap.findMin(h) :: drain(heap.deleteMin(h))
 }
