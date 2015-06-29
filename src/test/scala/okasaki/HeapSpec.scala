@@ -57,7 +57,7 @@ trait HeapSpec extends Specification with ScalaCheck {
   }
 
   def fromList(a: List[E]): H =
-    a.foldLeft(heap.empty)((p, q) => heap.insert(q, p))
+    a.foldRight(heap.empty)(heap.insert)
 
   def drain(h: H): List[E] =
     if (heap.isEmpty(h)) Nil
