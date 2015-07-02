@@ -9,8 +9,8 @@ Progress
 
 We'll track progress against the Haskell code ToC (App. A):
 
-- [ ] Queues
- - [ ] Batched
+- [x] Queues
+ - [x] Batched
  - [ ] Banker's
  - [ ] Physicist's
  - [ ] Hood-Melville
