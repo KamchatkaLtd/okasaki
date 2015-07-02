@@ -27,7 +27,7 @@ trait BatchedDeque[E] extends Deque[E, (List[E], List[E])] {
   }
 
   val checkr: (List[E], List[E]) => (List[E], List[E]) = {
-    case (f@(_ :: _), Nil) =>
+    case (f, Nil) =>
       val (newf, newr) = f.splitAt((f.size + 1) / 2)
       (newf, newr.reverse)
     case q => q
