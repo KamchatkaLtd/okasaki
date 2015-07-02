@@ -35,5 +35,5 @@ trait SetSpec[E, S] extends Specification with ScalaCheck {
   implicit def manyElements: Arbitrary[Seq[E]] =
     Arbitrary(Gen.listOf(elements.arbitrary).filter(_.nonEmpty))
 
-  def setFrom(es: Seq[E]): S = es.foldLeft(set.empty)((s, a) => set.insert(a, s))
+  def setFrom(es: Seq[E]): S = es.foldRight(set.empty)(set.insert)
 }
