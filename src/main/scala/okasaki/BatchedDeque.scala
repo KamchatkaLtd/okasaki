@@ -52,14 +52,16 @@ trait BatchedDeque[E] extends Deque[E, (List[E], List[E])] {
   }
 
   override def init: ((List[E], List[E])) => (List[E], List[E]) = {
-    case (Nil, Nil) => throw new IllegalStateException("tail called on an empty deque")
+    case (Nil, _) => throw new IllegalStateException("init called on an empty deque")
     case (f, (_ :: r)) => checkr(f, r)
     case (x :: Nil, Nil) => (Nil, Nil)
+    case (f, r) => throw new IllegalStateException(s"non-balanced deque: (f=$f,r=$r)")
   }
 
   override def last: ((List[E], List[E])) => E = {
-    case (Nil, Nil) => throw new IllegalStateException("head called on an empty deque")
+    case (Nil, _) => throw new IllegalStateException("last called on an empty deque")
     case (_, (x :: _)) => x
     case (x :: Nil, Nil) => x
+    case (f, r) => throw new IllegalStateException(s"non-balanced deque: (f=$f,r=$r)")
   }
 }
