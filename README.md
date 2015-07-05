@@ -9,7 +9,7 @@ Progress
 
 We'll track progress against the Haskell code ToC (App. A):
 
-- [x] Queues
+- [ ] Queues
  - [x] Batched
  - [ ] Banker's
  - [ ] Physicist's
@@ -17,6 +17,7 @@ We'll track progress against the Haskell code ToC (App. A):
  - [ ] Bootstrapped
  - [ ] Implicit
 - [ ] Deques
+ - [x] Batched
  - [ ] Banker's
 - [ ] Catenable Lists
  - [ ] Bootstrapped
