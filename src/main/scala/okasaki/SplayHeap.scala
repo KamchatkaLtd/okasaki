@@ -15,6 +15,16 @@ object SplayHeap {
     override def toString: String = s"T($l,$e,$r)"
   }
 
+  def sort[E](list: List[E])(implicit  ord: Ordering[E]): List[E] = {
+    def inOrder(sHeap: SHeap[E], res: List[E]): List[E] = sHeap match {
+      case Empty => res
+      case Tree(a, x, b) => inOrder(a, x :: inOrder(b, res))
+    }
+    val heap = new SplayHeap[E]()
+    val h = list.foldRight(heap.empty)(heap.insert)
+    inOrder(h, Nil)
+  }
+
 }
 
 class SplayHeap[E](implicit val ord: Ordering[E]) extends Heap[E, SplayHeap.SHeap[E]] {

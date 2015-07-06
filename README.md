@@ -33,7 +33,7 @@ We'll track progress against the Haskell code ToC (App. A):
  - [x] Weight-Biased Leftist
  - [x] Binomial
  - [x] Splay
- - [ ] Pairing
+ - [x] Pairing
  - [ ] Lazy Pairing
  - [ ] Skew Binomial
  - [ ] Bootstrapped

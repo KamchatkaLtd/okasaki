@@ -13,4 +13,11 @@ class SplayHeapSpec extends HeapSpec {
   override implicit def elements: Arbitrary[E] = Arbitrary(Gen.chooseNum(Int.MinValue, Int.MaxValue, 0, 1, -1))
 
   override def heap: Heap[E, H] = new SplayHeap[E]
+
+  "sort" should {
+    "be identical to built-in" ! prop {
+      (xs: List[E]) =>
+        SplayHeap.sort(xs) === xs.sorted
+    }
+  }
 }
