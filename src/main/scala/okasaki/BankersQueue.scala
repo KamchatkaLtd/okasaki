@@ -10,6 +10,9 @@ trait BankersQueue[E] extends Queue[E, (Int, Stream[E], Int, Stream[E])] {
 
   override def isEmpty: ((Int, Stream[E], Int, Stream[E])) => Boolean = _._1 == 0
 
+  // TODO: In Scala, r.reverse is strict; so we won't be able to discard the debits before it happens.
+  // What we need is a very lazy ++, one that does not calculate its argument until the stream reaches it
+  // See okasaki#1
   val check: (Int, Stream[E], Int, Stream[E]) => (Int, Stream[E], Int, Stream[E]) = {
     case (lenf, f, lenr, r) if lenf > lenr => (lenf + lenr, f ++ r.reverse, 0, Empty)
     case q => q
