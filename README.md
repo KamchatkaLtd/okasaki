@@ -24,7 +24,7 @@ We'll track progress against the Haskell code ToC (App. A):
 - [ ] Catenable Deques
  - [ ] Simple
  - [ ] Implicit
-- [ ] Random-Acccess Lists
+- [ ] Random-Access Lists
  - [ ] Binary
  - [ ] Skew Binary
  - [ ] Binary (alternative)
