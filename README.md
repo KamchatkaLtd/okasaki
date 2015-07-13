@@ -37,8 +37,8 @@ We'll track progress against the Haskell code ToC (App. A):
  - [ ] Lazy Pairing
  - [ ] Skew Binomial
  - [ ] Bootstrapped
-- [ ] Sortable Collections
- - [ ] Bottom-up Mergesort
+- [x] Sortable Collections
+ - [x] Bottom-up Mergesort
 - [x] Sets
  - [x] Unbalanced
  - [x] Red-Black
