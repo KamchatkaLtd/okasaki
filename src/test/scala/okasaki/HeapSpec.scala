@@ -50,7 +50,7 @@ trait HeapSpec extends Specification with ScalaCheck {
 
   "sorting" should {
     "be natural" ! prop {
-      (a: List[E], h: H) =>
+      a: List[E] =>
         val hh = fromList(a)
         drain(hh) === a.sorted(heap.ord)
     }
