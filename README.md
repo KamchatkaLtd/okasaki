@@ -12,7 +12,7 @@ We'll track progress against the Haskell code ToC (App. A):
 - [ ] Queues
  - [x] Batched
  - [x] Banker's
- - [ ] Physicist's
+ - [x] Physicist's
  - [ ] Hood-Melville
  - [ ] Bootstrapped
  - [ ] Implicit
