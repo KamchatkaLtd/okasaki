@@ -34,7 +34,7 @@ We'll track progress against the Haskell code ToC (App. A):
  - [x] Binomial
  - [x] Splay
  - [x] Pairing
- - [ ] Lazy Pairing
+ - [x] Lazy Pairing
  - [ ] Skew Binomial
  - [ ] Bootstrapped
 - [x] Sortable Collections
