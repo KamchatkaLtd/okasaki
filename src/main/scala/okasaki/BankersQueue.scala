@@ -11,7 +11,7 @@ trait BankersQueue[E] extends Queue[E, (Int, Stream[E], Int, Stream[E])] {
   override def isEmpty: ((Int, Stream[E], Int, Stream[E])) => Boolean = _._1 == 0
 
   val check: (Int, Stream[E], Int, Stream[E]) => (Int, Stream[E], Int, Stream[E]) = {
-    case (lenf, f, lenr, r) if lenf > lenr => (lenf + lenr, f #::: r.reverse, 0, Empty)
+    case (lenf, f, lenr, r) if lenr > lenf => (lenf + lenr, f #::: r.reverse, 0, Empty)
     case q => q
   }
 
