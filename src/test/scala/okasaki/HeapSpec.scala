@@ -30,6 +30,18 @@ trait HeapSpec extends Specification with ScalaCheck {
         val h = heap.empty
         heap.findMin(heap.insert(e, h)) === e
     }
+
+    "be empty for find" ! prop {
+      e: E =>
+        val h = heap.empty
+        heap.findMin(h) should throwAn[IllegalStateException]
+    }
+
+    "be empty for delete" ! prop {
+      e: E =>
+        val h = heap.empty
+        heap.deleteMin(h) should throwAn[IllegalStateException]
+    }
   }
 
   "any heap" should {
