@@ -4,7 +4,7 @@ import okasaki.RealTimeQueue.Repr
 
 import scala.collection.immutable.Stream.Empty
 
-/**                                                  (
+/**
  * Copyright (C) 2015 Kamchatka Ltd
  */
 object RealTimeQueue {
