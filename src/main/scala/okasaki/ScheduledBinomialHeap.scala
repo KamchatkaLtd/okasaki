@@ -54,8 +54,8 @@ trait ScheduledBinomialHeap[E] extends Heap[E, ScheduledBinomialHeap.Repr[E]] {
 
   // ex. 7.4
   def mrgWithList(a: List[Node[E]], b: Stream[Digit[E]]): Stream[Digit[E]] = (a, b) match {
-    case (ds1, Empty) => ds1.map(One[E]).toStream
     case (Nil, ds2) => ds2
+    case (ds1, Empty) => ds1.map(One[E]).toStream
     case (d :: ds1, Zero #:: ds2) => One(d) #:: mrgWithList(ds1, ds2)
     case (t1 :: ds1, One(t2) #:: ds2) => Zero #:: insTree(link(t1, t2), mrgWithList(ds1, ds2))
   }
