@@ -100,7 +100,7 @@ trait ScheduledBinomialHeap[E] extends Heap[E, ScheduledBinomialHeap.Repr[E]] {
 
   override def deleteMin: (Repr[E]) => Repr[E] = {
     case (ds, _) =>
-      val (Node(x, c), ds1) = removeMinTree(ds)
+      val (Node(_, c), ds1) = removeMinTree(ds)
       val ds11 = mrgWithList(c.reverse, ds1)
       (ds11.force, Nil)
   }
