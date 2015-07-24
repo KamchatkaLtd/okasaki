@@ -52,6 +52,14 @@ trait ScheduledBinomialHeap[E] extends Heap[E, ScheduledBinomialHeap.Repr[E]] {
     case (One(t1) #:: ds1, One(t2) #:: ds2) => Zero #:: insTree(link(t1, t2), mrg(ds1, ds2))
   }
 
+  // ex. 7.4
+  def mrgWithList(a: List[Node[E]], b: Stream[Digit[E]]): Stream[Digit[E]] = (a, b) match {
+    case (ds1, Empty) => ds1.map(One[E]).toStream
+    case (Nil, ds2) => ds2
+    case (d :: ds1, Zero #:: ds2) => One(d) #:: mrgWithList(ds1, ds2)
+    case (t1 :: ds1, One(t2) #:: ds2) => Zero #:: insTree(link(t1, t2), mrgWithList(ds1, ds2))
+  }
+
   def exec[T](s: Schedule[T]): Schedule[T] = s match {
     case Nil => Nil
     case (Zero #:: job) :: sched => job :: sched
@@ -93,7 +101,7 @@ trait ScheduledBinomialHeap[E] extends Heap[E, ScheduledBinomialHeap.Repr[E]] {
   override def deleteMin: (Repr[E]) => Repr[E] = {
     case (ds, _) =>
       val (Node(x, c), ds1) = removeMinTree(ds)
-      val ds11 = mrg(c.reverse.map(One[E]).toStream, ds1)
+      val ds11 = mrgWithList(c.reverse, ds1)
       (ds11.force, Nil)
   }
 }
