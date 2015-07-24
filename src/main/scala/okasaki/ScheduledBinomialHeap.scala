@@ -74,8 +74,8 @@ trait ScheduledBinomialHeap[E] extends Heap[E, ScheduledBinomialHeap.Repr[E]] {
 
   override def merge: (Repr[E], Repr[E]) => Repr[E] = {
     case ((ds1, _), (ds2, _)) =>
-      val ds = mrg(ds1, ds2).force
-      (ds, Nil)
+      val ds = mrg(ds1, ds2)
+      (ds.force, Nil)
   }
 
   def removeMinTree(ds: Stream[Digit[E]]): (Node[E], Stream[Digit[E]]) = ds match {
