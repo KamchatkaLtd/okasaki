@@ -31,6 +31,6 @@ class BottomUpMergeSort[E](implicit val ord: Ordering[E]) extends Sortable[E, Re
   }
 
 
-  override def sort(s: (Int, Susp[List[List[E]]])): List[E] =
+  override def sort(s: Repr[E]): List[E] =
     s._2().foldLeft(List[E]())(mrg)
 }
