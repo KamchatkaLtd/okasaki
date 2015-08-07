@@ -65,7 +65,7 @@ object ScarredZipperTree {
 
     def insert_down(t1: Tree[E]): Loc[E] = t match {
       case Item(_) => failwith("down of item")
-      case Siblings(sons) => Loc(t1, Node(Nil, p, sons))
+      case Siblings(left, up, right) => Loc(Siblings(left, up, t1 :: right), p)
     }
 
     def delete: Loc[E] = p match {
