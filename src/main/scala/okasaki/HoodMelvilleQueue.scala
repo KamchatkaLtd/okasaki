@@ -6,7 +6,9 @@ object HoodMelvilleQueue {
 
   sealed trait RotationState[+E]
 
-  object Idle extends RotationState[Nothing]
+  object Idle extends RotationState[Nothing] {
+    override def toString = s"Idle()"
+  }
 
   case class Reversing[E](ok: Int, f: List[E], newf: List[E], r: List[E], newr: List[E]) extends RotationState[E]
 
@@ -34,6 +36,8 @@ class HoodMelvilleQueue[E] extends Queue[E, Repr[E]] {
     case _ => state
   }
 
+  val execTwice = exec _ andThen exec
+
   def invalidate(state: RotationState[E]): RotationState[E] = state match {
     case Reversing(ok, f, f1, r, r1) => Reversing(ok - 1, f, f1, r, r1)
     case Appending(0, _, _ :: r1) => Done(r1)
@@ -41,19 +45,18 @@ class HoodMelvilleQueue[E] extends Queue[E, Repr[E]] {
     case _ => state
   }
 
-  def exec2(q: Repr[E]): Repr[E] = {
-    val Repr(lenf, f, state, lenr, r) = q
-    exec(exec(state)) match {
-      case Done(newf) => Repr(lenf, newf, Idle, lenr, r)
-      case newstate => Repr(lenf, f, newstate, lenr, r)
+  def execute(q: Repr[E], step: RotationState[E] => RotationState[E]): Repr[E] = {
+    step(q.state) match {
+      case Done(newf) => q.copy(f = newf, state = Idle)
+      case newstate => q.copy(state = newstate)
     }
   }
 
   def check(q: Repr[E]): Repr[E] =
-    if (q.lenr <= q.lenf) exec2(q)
+    if (q.lenr <= q.lenf) execute(q, exec)
     else {
       val newstate = Reversing(0, q.f, Nil, q.r, Nil)
-      exec2(Repr(q.size, q.f, newstate, 0, Nil))
+      execute(Repr(q.size, q.f, newstate, 0, Nil), execTwice)
     }
 
   override def snoc: (Repr[E], E) => Repr[E] = {
