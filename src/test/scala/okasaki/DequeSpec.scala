@@ -9,7 +9,7 @@ import scala.collection.immutable.Stream.iterate
 /**
   * Copyright (C) 2015 Kamchatka Ltd
   */
-trait DequeSpec[E, Q] extends QueueSpec[E, Q] {
+trait DequeSpec[E, Q] extends OutputRestrictedDequeSpec[E, Q] {
    def elements: Arbitrary[E]
 
    def queue: Deque[E, Q]
@@ -21,9 +21,6 @@ trait DequeSpec[E, Q] extends QueueSpec[E, Q] {
          xs1 === xs
      }
    }
-
-   def fromListReversed(xs: List[E]): Q =
-     xs.foldLeft(queue.empty)(queue.cons)
 
    def drainReversed(q: Q): List[E] =
      iterate(q)(queue.init)
