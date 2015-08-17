@@ -7,7 +7,9 @@ import scala.collection.immutable.Stream.{#::, Empty}
 
 object BankersDeque {
 
-  case class Repr[E](lenf: Int, f: Stream[E], lenr: Int, r: Stream[E])
+  case class Repr[E](lenf: Int, f: Stream[E], lenr: Int, r: Stream[E]) {
+    lazy val length = lenf + lenr
+  }
 
 }
 
@@ -24,14 +26,14 @@ class BankersDeque[E](c: Int) extends Deque[E, Repr[E]] {
 
   def check(q: Repr[E]): Repr[E] = q match {
     case Repr(lenf, f, lenr, r) if lenf > c * lenr + 1 =>
-      val i = (lenf + lenr) / 2
-      val j = (lenf + lenr) - i
+      val i = q.length / 2
+      val j = q.length - i
       val (f1, f2) = f.splitAt(i)
       val r1 = r #::: f2.reverse
       Repr(i, f1, j, r1)
     case Repr(lenf, f, lenr, r) if lenr > c * lenf + 1 =>
-      val j = (lenf + lenr) / 2
-      val i = (lenf + lenr) - j
+      val j = q.length / 2
+      val i = q.length - j
       val (r1, r2) = r.splitAt(j)
       val f1 = f #::: r2.reverse
       Repr(i, f1, j, r1)
