@@ -16,9 +16,9 @@ We'll track progress against the Haskell code ToC (App. A):
  - [x] Hood-Melville
  - [ ] Bootstrapped
  - [ ] Implicit
-- [ ] Deques
+- [x] Deques
  - [x] Batched
- - [ ] Banker's
+ - [x] Banker's
 - [ ] Catenable Lists
  - [ ] Bootstrapped
 - [ ] Catenable Deques
