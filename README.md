@@ -7,18 +7,20 @@ The code here is an implementation of data structures and solutions to exercises
 Progress
 --------
 
-We'll track progress against the Haskell code ToC (App. A):
+We'll track progress against an expanded version of Haskell code ToC (App. A):
 
 - [ ] Queues
  - [x] Batched
  - [x] Banker's
  - [x] Physicist's
+ - [x] Real-time
  - [x] Hood-Melville
  - [ ] Bootstrapped
  - [ ] Implicit
 - [x] Deques
  - [x] Batched
  - [x] Banker's
+ - [x] Real-time
 - [ ] Catenable Lists
  - [ ] Bootstrapped
 - [ ] Catenable Deques

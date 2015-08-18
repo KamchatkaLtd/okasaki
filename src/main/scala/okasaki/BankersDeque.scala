@@ -19,10 +19,7 @@ object BankersDeque {
 class BankersDeque[E](c: Int) extends Deque[E, Repr[E]] {
   override def empty: Repr[E] = Repr(0, Empty, 0, Empty)
 
-  override def isEmpty: (Repr[E]) => Boolean = {
-    case Repr(0, _, 0, _) => true
-    case _ => false
-  }
+  override def isEmpty: (Repr[E]) => Boolean = _.length == 0
 
   def check(q: Repr[E]): Repr[E] = q match {
     case Repr(lenf, f, lenr, r) if lenf > c * lenr + 1 =>
