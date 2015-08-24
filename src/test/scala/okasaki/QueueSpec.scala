@@ -10,7 +10,7 @@ import scala.collection.immutable.Stream.iterate
  * Copyright (C) 2015 Kamchatka Ltd
  */
 trait QueueSpec[E, Q] extends Specification with ScalaCheck {
-  def elements: Arbitrary[E]
+  implicit def elements: Arbitrary[E]
 
   def queue: Queue[E, Q]
 
@@ -21,8 +21,6 @@ trait QueueSpec[E, Q] extends Specification with ScalaCheck {
         xs1 === xs
     }
   }
-
-  implicit val manyElements = Arbitrary(Gen.listOf(elements.arbitrary))
 
   def fromList(xs: List[E]): Q =
     xs.foldLeft(queue.empty)(queue.snoc)

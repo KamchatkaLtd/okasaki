@@ -1,13 +1,9 @@
 package okasaki
 
-import org.scalacheck.Arbitrary
-
 /**
  * Copyright (C) 2015 Kamchatka Ltd
  */
 trait OutputRestrictedDequeSpec[E, Q] extends QueueSpec[E, Q] {
-
-  def elements: Arbitrary[E]
 
   def queue: OutputRestrictedDeque[E, Q]
 

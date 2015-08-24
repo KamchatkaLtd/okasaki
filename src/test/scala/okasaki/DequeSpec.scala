@@ -10,8 +10,6 @@ import scala.collection.immutable.Stream.iterate
   * Copyright (C) 2015 Kamchatka Ltd
   */
 trait DequeSpec[E, Q] extends OutputRestrictedDequeSpec[E, Q] {
-   def elements: Arbitrary[E]
-
    def queue: Deque[E, Q]
 
    "A deque" should {
