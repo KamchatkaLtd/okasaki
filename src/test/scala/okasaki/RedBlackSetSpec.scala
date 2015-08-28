@@ -1,16 +1,13 @@
 package okasaki
 
 import okasaki.RedBlackSet.RBTree
-import org.scalacheck.{Arbitrary, Gen}
 
 /**
  * Copyright (C) 2015 Kamchatka Ltd
  */
 
-class RedBlackSetSpec extends SetSpec[Int, RBTree[Int]] {
+class RedBlackSetSpec extends SetSpec[Int, RBTree[Int]] with IntElements {
   override def set: RedBlackSet[Int] = new RedBlackSet[Int]()
-
-  implicit def elements: Arbitrary[Int] = Arbitrary(Gen.choose(Int.MinValue, Int.MaxValue))
 
   "fromOrdList" should {
     "contain its elements" ! prop { a: List[Int] =>
