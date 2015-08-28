@@ -7,7 +7,7 @@ import org.specs2.mutable.Specification
 /**
  * Copyright (C) 2015 Kamchatka Ltd
  */
-abstract class SetSpec[E, S](set: Set[E, S]) extends Specification with ScalaCheck {
+abstract class SetSpec[E, S, SES <: Set[E, S]](val set: SES) extends Specification with ScalaCheck {
 
   implicit def elements: Arbitrary[E]
 

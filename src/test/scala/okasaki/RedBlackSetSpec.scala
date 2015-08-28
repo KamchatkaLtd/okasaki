@@ -1,17 +1,13 @@
 package okasaki
 
+import okasaki.RedBlackSet.RBTree
+
 /**
  * Copyright (C) 2015 Kamchatka Ltd
  */
-object RedBlackSetSpec {
-  val set = new RedBlackSet[Int]
-}
-
 class RedBlackSetSpec
-  extends SetSpec(RedBlackSetSpec.set)
+  extends SetSpec[Int, RBTree[Int], RedBlackSet[Int]](new RedBlackSet[Int])
   with IntElements {
-
-  val set = RedBlackSetSpec.set
 
   "fromOrdList" should {
     "contain its elements" ! prop { a: List[Int] =>
