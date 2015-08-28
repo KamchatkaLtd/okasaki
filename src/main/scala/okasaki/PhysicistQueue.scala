@@ -11,7 +11,7 @@ object PhysicistQueue {
 
 }
 
-trait PhysicistQueue[E] extends Queue[E, Repr[E]] {
+class PhysicistQueue[E] extends Queue[E, Repr[E]] {
   override val empty: Repr[E] =
     Repr(Nil, 0, Susp(Nil), 0, Nil)
 

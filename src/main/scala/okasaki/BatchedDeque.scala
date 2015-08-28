@@ -3,7 +3,7 @@ package okasaki
 /**
  * Copyright (C) 2015 Kamchatka Ltd
  */
-trait BatchedDeque[E] extends Deque[E, (List[E], List[E])] {
+class BatchedDeque[E] extends Deque[E, (List[E], List[E])] {
   override def empty: (List[E], List[E]) = (Nil, Nil)
 
   /*

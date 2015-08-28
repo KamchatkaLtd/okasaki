@@ -5,7 +5,7 @@ import scala.collection.immutable.Stream.Empty
 /**
  * Copyright (C) 2015 Kamchatka Ltd
  */
-trait BankersQueue[E] extends Queue[E, (Int, Stream[E], Int, Stream[E])] {
+class BankersQueue[E] extends Queue[E, (Int, Stream[E], Int, Stream[E])] {
   override def empty: (Int, Stream[E], Int, Stream[E]) = (0, Empty, 0, Empty)
 
   override def isEmpty: ((Int, Stream[E], Int, Stream[E])) => Boolean = _._1 == 0

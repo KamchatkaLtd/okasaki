@@ -3,7 +3,7 @@ package okasaki
 /**
  * Copyright (C) 2015 Kamchatka Ltd
  */
-trait BatchedQueue[E] extends Queue[E, (List[E], List[E])] {
+class BatchedQueue[E] extends Queue[E, (List[E], List[E])] {
   override def empty: (List[E], List[E]) = (Nil, Nil)
 
   override def isEmpty: ((List[E], List[E])) => Boolean = {

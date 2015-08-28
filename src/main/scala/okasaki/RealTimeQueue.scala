@@ -11,7 +11,7 @@ object RealTimeQueue {
   type Repr[E] = (Stream[E], List[E], Stream[E])
 }
 
-trait RealTimeQueue[E] extends Queue[E, Repr[E]] {
+class RealTimeQueue[E] extends Queue[E, Repr[E]] {
   override def empty: Repr[E] = (Empty, Nil, Empty)
 
   override def isEmpty: (Repr[E]) => Boolean = _._1.isEmpty
