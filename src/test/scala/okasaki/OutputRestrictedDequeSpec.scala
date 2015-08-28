@@ -3,7 +3,7 @@ package okasaki
 /**
  * Copyright (C) 2015 Kamchatka Ltd
  */
-abstract class OutputRestrictedDequeSpec[E, Q](queue: OutputRestrictedDeque[E, Q]) extends QueueSpec(queue) {
+abstract class OutputRestrictedDequeSpec[E, Q](ordeque: OutputRestrictedDeque[E, Q]) extends QueueSpec(ordeque) {
   "An output-restricted deque" should {
     "Maintain the reverse order" ! prop {
       xs: List[E] =>
@@ -12,6 +12,6 @@ abstract class OutputRestrictedDequeSpec[E, Q](queue: OutputRestrictedDeque[E, Q
     }
   }
 
-  def fromListReversed(xs: List[E]): Q = xs.foldLeft(queue.empty)(queue.cons)
+  def fromListReversed(xs: List[E]): Q = xs.foldLeft(ordeque.empty)(ordeque.cons)
 
 }

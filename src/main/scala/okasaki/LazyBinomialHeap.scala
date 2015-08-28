@@ -10,11 +10,9 @@ object LazyBinomialHeap {
   type BHeap[E] = Susp[List[(Int, Node[E])]]
 }
 
-trait LazyBinomialHeap[E] extends Heap[E, LazyBinomialHeap.BHeap[E]] {
+class LazyBinomialHeap[E](implicit val ord: Ordering[E]) extends Heap[E, LazyBinomialHeap.BHeap[E]] {
 
   import okasaki.LazyBinomialHeap._
-
-  def ord: Ordering[E]
 
   override def empty: BHeap[E] = Susp(Nil)
 

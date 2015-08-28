@@ -3,16 +3,13 @@ package okasaki
 /**
  * Copyright (C) 2015 Kamchatka Ltd
  */
-class SplayHeapSpec extends HeapSpec with IntElements {
-  override type E = Int
-
-  override type H = SplayHeap.SHeap[Int]
-
-  override def heap: Heap[E, H] = new SplayHeap[E]
+class SplayHeapSpec
+  extends HeapSpec(new SplayHeap[Int])
+  with IntElements {
 
   "sort" should {
     "be identical to built-in" ! prop {
-      (xs: List[E]) =>
+      (xs: List[Int]) =>
         SplayHeap.sort(xs) === xs.sorted
     }
   }

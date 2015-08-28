@@ -9,10 +9,8 @@ import org.specs2.mutable.Specification
 /**
  * Copyright (C) 2015 Kamchatka Ltd
  */
-trait RandomAccessListSpec[E, RL] extends Specification with ScalaCheck {
+abstract class RandomAccessListSpec[E, RL](list: RandomAccessList[E, RL]) extends Specification with ScalaCheck {
   implicit def elements: Arbitrary[E]
-
-  def list: RandomAccessList[E, RL]
 
   "A list" should {
     "Maintain the order" ! prop {

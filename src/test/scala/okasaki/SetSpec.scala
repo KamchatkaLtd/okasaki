@@ -7,8 +7,7 @@ import org.specs2.mutable.Specification
 /**
  * Copyright (C) 2015 Kamchatka Ltd
  */
-trait SetSpec[E, S] extends Specification with ScalaCheck {
-  def set: Set[E, S]
+abstract class SetSpec[E, S](set: Set[E, S]) extends Specification with ScalaCheck {
 
   implicit def elements: Arbitrary[E]
 
@@ -35,5 +34,5 @@ trait SetSpec[E, S] extends Specification with ScalaCheck {
   implicit def manyElements: Arbitrary[Seq[E]] =
     Arbitrary(Gen.listOf(elements.arbitrary).filter(_.nonEmpty))
 
-  def setFrom(es: Seq[E]): S = es.foldRight(set.empty)(set.insert)
+  private def setFrom(es: Seq[E]): S = es.foldRight(set.empty)(set.insert)
 }

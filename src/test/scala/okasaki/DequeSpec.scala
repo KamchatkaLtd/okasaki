@@ -5,7 +5,7 @@ import scala.collection.immutable.Stream.iterate
 /**
  * Copyright (C) 2015 Kamchatka Ltd
  */
-abstract class DequeSpec[E, Q](queue: Deque[E, Q]) extends OutputRestrictedDequeSpec(queue) {
+abstract class DequeSpec[E, Q](deque: Deque[E, Q]) extends OutputRestrictedDequeSpec(deque) {
   "A deque" should {
     "Maintain the reverse order" ! prop {
       xs: List[E] =>
@@ -15,8 +15,8 @@ abstract class DequeSpec[E, Q](queue: Deque[E, Q]) extends OutputRestrictedDeque
   }
 
   def drainReversed(q: Q): List[E] =
-    iterate(q)(queue.init)
-      .takeWhile(!queue.isEmpty(_))
-      .map(queue.last)
+    iterate(q)(deque.init)
+      .takeWhile(!deque.isEmpty(_))
+      .map(deque.last)
       .toList
 }

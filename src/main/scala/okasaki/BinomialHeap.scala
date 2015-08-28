@@ -10,11 +10,9 @@ object BinomialHeap {
   type BHeap[E] = List[(Int, Node[E])]
 }
 
-trait BinomialHeap[E] extends Heap[E, BinomialHeap.BHeap[E]] {
+class BinomialHeap[E](implicit val ord: Ordering[E]) extends Heap[E, BinomialHeap.BHeap[E]] {
 
   import okasaki.BinomialHeap._
-
-  def ord: Ordering[E]
 
   override def empty: BHeap[E] = Nil
 

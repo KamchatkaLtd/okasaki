@@ -7,12 +7,7 @@ import org.specs2.mutable.Specification
 /**
  * Copyright (C) 2015 Kamchatka Ltd
  */
-trait HeapSpec extends Specification with ScalaCheck {
-  type E
-
-  type H
-
-  def heap: Heap[E, H]
+abstract class HeapSpec[E, H](heap: Heap[E, H]) extends Specification with ScalaCheck {
 
   implicit def elements: Arbitrary[E]
 

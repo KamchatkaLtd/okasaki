@@ -1,13 +1,17 @@
 package okasaki
 
-import okasaki.RedBlackSet.RBTree
-
 /**
  * Copyright (C) 2015 Kamchatka Ltd
  */
+object RedBlackSetSpec {
+  val set = new RedBlackSet[Int]
+}
 
-class RedBlackSetSpec extends SetSpec[Int, RBTree[Int]] with IntElements {
-  override def set: RedBlackSet[Int] = new RedBlackSet[Int]()
+class RedBlackSetSpec
+  extends SetSpec(RedBlackSetSpec.set)
+  with IntElements {
+
+  val set = RedBlackSetSpec.set
 
   "fromOrdList" should {
     "contain its elements" ! prop { a: List[Int] =>
@@ -31,7 +35,7 @@ class RedBlackSetSpec extends SetSpec[Int, RBTree[Int]] with IntElements {
 
   "red-black set" should {
     "be balanced" ! prop { (a: Seq[Int]) =>
-      val s = setFrom(a)
+      val s = RedBlackSet.fromOrdList(a.sorted.toList)
 
       set.isValid(s) should beTrue
     }

@@ -7,12 +7,7 @@ import org.specs2.mutable.Specification
 /**
  * Copyright (C) 2015 Kamchatka Ltd
  */
-trait SortingSpec extends Specification with ScalaCheck {
-  type E
-
-  type S
-
-  def sorter: Sortable[E, S]
+abstract class SortingSpec[E, S](sorter: Sortable[E, S]) extends Specification with ScalaCheck {
 
   implicit def elements: Arbitrary[E]
 

@@ -20,11 +20,9 @@ object ScheduledBinomialHeap {
   type Repr[E] = (Stream[Digit[E]], Schedule[E])
 }
 
-trait ScheduledBinomialHeap[E] extends Heap[E, ScheduledBinomialHeap.Repr[E]] {
+class ScheduledBinomialHeap[E](implicit val ord: Ordering[E]) extends Heap[E, ScheduledBinomialHeap.Repr[E]] {
 
   import okasaki.ScheduledBinomialHeap._
-
-  def ord: Ordering[E]
 
   override def empty: Repr[E] = (Empty, Nil)
 
