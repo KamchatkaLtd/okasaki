@@ -9,10 +9,8 @@ import scala.collection.immutable.Stream.iterate
 /**
  * Copyright (C) 2015 Kamchatka Ltd
  */
-trait QueueSpec[E, Q] extends Specification with ScalaCheck {
+abstract class QueueSpec[E, Q](queue: Queue[E, Q]) extends Specification with ScalaCheck {
   implicit def elements: Arbitrary[E]
-
-  def queue: Queue[E, Q]
 
   "A queue" should {
     "Maintain the order" ! prop {

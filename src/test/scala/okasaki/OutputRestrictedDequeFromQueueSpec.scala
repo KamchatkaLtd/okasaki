@@ -1,11 +1,9 @@
 package okasaki
 
-import okasaki.OutputRestrictedDeque.{ForQueue, Repr}
+import okasaki.OutputRestrictedDeque.ForQueue
 
 /**
  * Copyright (C) 2015 Kamchatka Ltd
  */
 class OutputRestrictedDequeFromQueueSpec
-  extends OutputRestrictedDequeSpec[Int, Repr[Int, HoodMelvilleQueue.Repr[Int]]] with IntElements {
-  override def queue = new ForQueue(new HoodMelvilleQueue[Int])
-}
+  extends OutputRestrictedDequeSpec(new ForQueue(new HoodMelvilleQueue[Int])) with IntElements

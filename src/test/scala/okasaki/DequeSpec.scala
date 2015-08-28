@@ -5,9 +5,7 @@ import scala.collection.immutable.Stream.iterate
 /**
  * Copyright (C) 2015 Kamchatka Ltd
  */
-trait DequeSpec[E, Q] extends OutputRestrictedDequeSpec[E, Q] {
-  def queue: Deque[E, Q]
-
+abstract class DequeSpec[E, Q](queue: Deque[E, Q]) extends OutputRestrictedDequeSpec(queue) {
   "A deque" should {
     "Maintain the reverse order" ! prop {
       xs: List[E] =>

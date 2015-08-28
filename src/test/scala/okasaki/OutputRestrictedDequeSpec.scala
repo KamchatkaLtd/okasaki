@@ -3,10 +3,7 @@ package okasaki
 /**
  * Copyright (C) 2015 Kamchatka Ltd
  */
-trait OutputRestrictedDequeSpec[E, Q] extends QueueSpec[E, Q] {
-
-  def queue: OutputRestrictedDeque[E, Q]
-
+abstract class OutputRestrictedDequeSpec[E, Q](queue: OutputRestrictedDeque[E, Q]) extends QueueSpec(queue) {
   "An output-restricted deque" should {
     "Maintain the reverse order" ! prop {
       xs: List[E] =>
