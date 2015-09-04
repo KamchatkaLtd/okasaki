@@ -22,7 +22,9 @@ object BinaryRandomAccessList {
 
   sealed trait Digit[+E]
 
-  object Zero extends Digit[Nothing]
+  object Zero extends Digit[Nothing] {
+    override def toString = "Zero"
+  }
 
   case class One[E](e: Tree[E]) extends Digit[E]
 
@@ -98,4 +100,32 @@ class BinaryRandomAccessList[E] extends RandomAccessList[E, RList[E]] {
     case (i, y, One(t) :: ts) => One(t) :: update(i - t.size, y, ts)
   }
 
+  def expand(l: RList[E]): RList[E] = {
+    def normalize(n: Int, ll: RList[E]): RList[E] = ll match {
+      case Nil => Nil
+      case One(t) :: ts if t.size == n => One(t) :: normalize(n * 2, ts)
+      case ts@(One(_) :: _) => Zero :: normalize(n * 2, ts)
+      case Zero :: ts => Zero :: normalize(n * 2, ts)
+    }
+    normalize(1, l)
+  }
+
+  def minusOne(t: Tree[E], a: RList[E]): RList[E] = t match {
+    case Leaf(_) => a
+    case Node(_, t1, t2) => minusOne(t1, One(t2) :: a)
+  }
+
+  def drop(n: Int, l: RList[E]): RList[E] = {
+    def drop1(n: Int, l: RList[E]): RList[E] = (n, l) match {
+      case (0, _) => l
+      case (_, Nil) => throw Subscript()
+      case (_, Zero :: ts) => drop1(n, ts)
+      case (_, One(t) :: ts) if n > t.size => drop1(n - t.size, ts)
+      case (_, One(t) :: ts) if n == t.size => ts
+      case (_, One(t) :: Nil) => drop1(n - 1, minusOne(t, Nil))
+      case (_, One(t) :: ts) => drop1(n - 1, minusOne(t, Zero :: ts))
+    }
+    val ll: RList[E] = drop1(n, l)
+    expand(ll)
+  }
 }

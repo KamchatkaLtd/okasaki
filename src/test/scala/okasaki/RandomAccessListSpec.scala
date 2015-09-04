@@ -9,7 +9,9 @@ import org.specs2.mutable.Specification
 /**
  * Copyright (C) 2015 Kamchatka Ltd
  */
-abstract class RandomAccessListSpec[E, RL](list: RandomAccessList[E, RL]) extends Specification with ScalaCheck {
+abstract class RandomAccessListSpec[E, RL, RAL <: RandomAccessList[E, RL]](val list: RAL)
+  extends Specification with ScalaCheck {
+
   implicit def elements: Arbitrary[E]
 
   "A list" should {
