@@ -30,6 +30,25 @@ object BinaryRandomAccessList {
 
 
   type RList[E] = List[Digit[E]]
+
+  def complete[E](x: E, w: Int): Tree[E] =
+    if (w == 1) Leaf(x)
+    else {
+      val tree = complete(x, w / 2)
+      Node(w, tree, tree)
+    }
+
+  def repeat[E](n: Int, x: E): RList[E] = {
+    def repeat1(m: Int, w: Int): RList[E] = {
+      if (m == 0) Nil
+      else {
+        val digit = if (m % 2 == 1) One(complete(x, w)) else Zero
+        digit :: repeat1(m / 2, w * 2)
+      }
+    }
+
+    repeat1(n, 1)
+  }
 }
 
 class BinaryRandomAccessList[E] extends RandomAccessList[E, RList[E]] {

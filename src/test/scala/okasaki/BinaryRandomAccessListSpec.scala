@@ -23,6 +23,14 @@ class BinaryRandomAccessListSpec
     }
   }
 
+  "repeat(n)" should {
+    "support any non-negative n" ! prop {
+      (a: Int, n: (List[Int], Int)) =>
+        val index = n._2
+        drain(repeat(index, a)) === List.iterate(a, index)(identity)
+    }
+  }
+
 
   implicit def arrayWithIndex: Arbitrary[(List[Int], Int)] = Arbitrary(
     for {
