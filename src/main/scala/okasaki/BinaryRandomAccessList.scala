@@ -140,8 +140,7 @@ class BinaryRandomAccessList[E] extends RandomAccessList[E, RList[E]] {
       case (_, Nil) => throw Subscript()
       case (_, Zero :: ts) => drop1(n, ts)
       case (_, One(t) :: ts) if n >= t.size => drop1(n - t.size, ts)
-      case (_, One(t) :: Nil) => drop1(n - 1, minusOne(t, Nil))
-      case (_, One(t) :: ts) => drop1(n - 1, minusOne(t, Zero :: ts))
+      case (_, One(t) :: ts) => drop1(n - 1, minusOne(t, ts))
     }
     val ll: RList[E] = drop1(n, l)
     expand(ll)
