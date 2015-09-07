@@ -110,8 +110,7 @@ class SparseBinaryRandomAccessList[E] extends RandomAccessList[E, SRList[E]] {
     def drop1(n: Int, l: SRList[E]): SRList[E] = (n, l) match {
       case (0, _) => l
       case (_, Nil) => throw Subscript()
-      case (_, t :: ts) if n > t.size => drop1(n - t.size, ts)
-      case (_, t :: ts) if n == t.size => ts
+      case (_, t :: ts) if n >= t.size => drop1(n - t.size, ts)
       case (_, t :: ts) => drop1(n - 1, minusOne(t, ts)._2)
     }
     drop1(n, l)
