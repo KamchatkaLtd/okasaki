@@ -3,7 +3,7 @@ package okasaki
 /**
  * Copyright (C) 2015 Kamchatka Ltd
  */
-object ZerolessBinary2 {
+object ZerolessBinary {
 
   sealed trait Digit
 
