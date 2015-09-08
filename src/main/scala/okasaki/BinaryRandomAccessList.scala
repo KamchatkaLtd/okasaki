@@ -77,9 +77,15 @@ class BinaryRandomAccessList[E] extends RandomAccessList[E, RList[E]] {
       (t1, One(t2) :: l2)
   }
 
-  override def head: (RList[E]) => E = ts => {
-    val (Leaf(x), _) = unconsTree(ts)
-    x
+  def headTree(t: Tree[E]): E = t match {
+    case Leaf(x) => x
+    case Node(_, t1, _) => headTree(t1)
+  }
+
+  override def head: (RList[E]) => E = {
+    case Nil => throw new IllegalStateException("head or tail called on an empty list")
+    case Zero :: ts => head(ts)
+    case One(t) :: _ => headTree(t)
   }
 
   override def tail: (RList[E]) => RList[E] = ts => {
