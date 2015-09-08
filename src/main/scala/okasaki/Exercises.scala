@@ -34,11 +34,22 @@ object Exercises {
   }
 
 
+  sealed trait Seq[+E]
+
+  object Nil1 extends Seq[Nothing] {
+    override def toString = s"Nil1"
+  }
+
+  case class Cons1[E](x: E, rest: Seq[(E, E)]) extends Seq[E]
+
+
   def main(args: Array[String]) {
     val ints = List(1, 2, 3)
     println(suffixes(ints).reverse)
     println(complete("©", 3))
     println(almostComplete("∆", 4))
     println(almostComplete("∆", 3))
+
+    println(Cons1(1, Cons1((2, 3), Cons1(((4, 5), (6, 7)), Nil1))))
   }
 }
