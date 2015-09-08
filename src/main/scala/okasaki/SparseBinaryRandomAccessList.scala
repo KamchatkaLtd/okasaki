@@ -55,15 +55,14 @@ class SparseBinaryRandomAccessList[E] extends RandomAccessList[E, SRList[E]] {
     case (l, e) => consTree(Leaf(e), l)
   }
 
-  def minusOne(t: Tree[E], a: SRList[E]): (E, SRList[E]) = t match {
+  def unconsTree1(t: Tree[E], a: SRList[E]): (E, SRList[E]) = t match {
     case Leaf(x) => (x, a)
-    case Node(_, t1, t2) => minusOne(t1, t2 :: a)
+    case Node(_, t1, t2) => unconsTree1(t1, t2 :: a)
   }
 
   def unconsTree(l: SRList[E]): (E, SRList[E]) = l match {
     case Nil => throw new IllegalStateException("head or tail called on an empty list")
-    case Leaf(x) :: ts => (x, ts)
-    case t :: ts => minusOne(t, ts)
+    case t :: ts => unconsTree1(t, ts)
   }
 
   override def head: (SRList[E]) => E = ts => {
@@ -111,7 +110,7 @@ class SparseBinaryRandomAccessList[E] extends RandomAccessList[E, SRList[E]] {
       case (0, _) => l
       case (_, Nil) => throw Subscript()
       case (_, t :: ts) if n >= t.size => drop1(n - t.size, ts)
-      case (_, t :: ts) => drop1(n - 1, minusOne(t, ts)._2)
+      case (_, t :: ts) => drop1(n - 1, unconsTree1(t, ts)._2)
     }
     drop1(n, l)
   }
