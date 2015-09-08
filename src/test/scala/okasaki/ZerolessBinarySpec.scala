@@ -8,7 +8,7 @@ import org.specs2.mutable.Specification
  */
 class ZerolessBinarySpec extends Specification with ScalaCheck {
 
-  import okasaki.ZerolessBinary._
+  import okasaki.ZerolessBinary2._
 
   "Zeroless numbers" should {
     "be reversible" ! prop {
