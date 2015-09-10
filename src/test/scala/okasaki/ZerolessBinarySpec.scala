@@ -21,6 +21,11 @@ class ZerolessBinarySpec extends Specification with ScalaCheck {
         (toLong(inc(toZeroless(n))) == n + 1l)
     }
 
+    "Support decrement" ! prop {
+      n: Int => (n > 0) ==>
+        (toLong(dec(toZeroless(n))) == n - 1l)
+    }
+
     "Support addition" ! prop {
       (a: Int, b: Int) => (a >= 0 && b >= 0) ==> {
         val sum = toLong(add(toZeroless(a), toZeroless(b)))

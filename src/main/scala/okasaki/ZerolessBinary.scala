@@ -17,6 +17,13 @@ object ZerolessBinary {
     case Two :: ds => One :: inc(ds)
   }
 
+  def dec(n: List[Digit]): List[Digit] = n match {
+    case Nil => throw new IllegalArgumentException("cannot decrement zero")
+    case One :: Nil => Nil
+    case Two :: ds => One :: ds
+    case One :: ds => Two :: dec(ds)
+  }
+
   def add(a: Digit, b: Digit, c: Option[Digit]): (Digit, Option[Digit]) = (a, b, c) match {
     case (One, One, None) => (Two, None)
     case (One, Two, None) => (One, Some(One))
