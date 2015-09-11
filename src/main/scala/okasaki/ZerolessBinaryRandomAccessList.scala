@@ -19,12 +19,12 @@ object ZerolessBinaryRandomAccessList {
 
   sealed trait Digit[E]
 
-  case class One[E](x: E) extends Digit[E]
+  case class One[E](x: Tree[E]) extends Digit[E]
 
-  case class Two[E](r: E, l: E) extends Digit[E]
+  case class Two[E](r: Tree[E], l: Tree[E]) extends Digit[E]
 
 
-  type SRList[E] = List[Digit[Tree[E]]]
+  type SRList[E] = List[Digit[E]]
 }
 
 class ZerolessBinaryRandomAccessList[E] extends RandomAccessList[E, SRList[E]] {
@@ -101,16 +101,26 @@ class ZerolessBinaryRandomAccessList[E] extends RandomAccessList[E, SRList[E]] {
     case (i, y, Two(t1, t2) :: ts) => Two(t1, t2) :: update(i - 2 * t1.size, y, ts)
   }
 
-//  def drop(n: Int, l: SRList[E]): SRList[E] = {
-//    def drop1(n: Int, l: SRList[E]): SRList[E] = (n, l) match {
-//      case (0, _) => l
-//      case (_, Nil) => throw Subscript()
-//      case (_, One(t) :: ts) if n >= t.size => drop1(n - t.size, ts)
-//      case (_, One(t) :: ts) => drop1(n - 1, unconsTree1(t, ts)._2)
-//      case (_, Two(t1, _) :: ts) if n >= t1.size * 2 => drop1(n - 2 * t1.size, ts)
-//      case (_, Two(t1, t2) :: ts) => drop1(n - 1, unconsTree1(t, ts)._2)
-//      case (_, t :: ts) if n >= t.size => drop1(n - t.size, ts)
-//    }
-//    drop1(n, l)
-//  }
+  def expand(l: SRList[E], n: Int): SRList[E] = l match {
+    case Nil => Nil
+    case One(Leaf(t)) :: ts => One(Leaf(t)) :: expand(ts, 2)
+    case Two(Leaf(t1), Leaf(t2)) :: ts => Two(Leaf(t1), Leaf(t2)) :: expand(ts, 2)
+    case One(Node(`n`, t1, t2)) :: ts => One(Node(`n`, t1, t2)) :: expand(ts, n * 2)
+    case Two(Node(`n`, t1, t2), t3) :: ts => Two(Node(`n`, t1, t2), t3) :: expand(ts, n * 2)
+    case One(Node(_, t1, t2)) :: ts => expand(Two(t1, t2) :: ts, n)
+    case Two(Node(_, t1, t2), t3) :: ts => expand(Two(t1, t2) :: One(t3) :: ts, n)
+  }
+
+  def drop(n: Int, l: SRList[E]): SRList[E] = {
+    def drop1(n: Int, l: SRList[E]): SRList[E] = (n, l) match {
+      case (0, _) => l
+      case (_, Nil) => throw Subscript()
+      case (_, One(t) :: ts) if n >= t.size => drop1(n - t.size, ts)
+      case (_, Two(t1, _) :: ts) if n >= t1.size * 2 => drop1(n - 2 * t1.size, ts)
+      case (_, Two(t1, t2) :: ts) if n >= t1.size => drop1(n - t1.size, One(t2) :: ts)
+      case _ => drop1(n, expand(l, 1))
+    }
+    val list = drop1(n, l)
+    expand(list, 1)
+  }
 }
