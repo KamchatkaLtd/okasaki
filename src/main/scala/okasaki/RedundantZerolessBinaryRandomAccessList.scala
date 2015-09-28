@@ -3,6 +3,8 @@ package okasaki
 import okasaki.RandomAccessList.Subscript
 import okasaki.RedundantZerolessBinaryRandomAccessList._
 
+import scala.collection.immutable.Stream.Empty
+
 object RedundantZerolessBinaryRandomAccessList {
 
   sealed trait Tree[E] {
@@ -25,21 +27,21 @@ object RedundantZerolessBinaryRandomAccessList {
   case class Three[E](r: Tree[E], c: Tree[E], l: Tree[E]) extends Digit[E]
 
 
-  type SRList[E] = List[Digit[E]]
+  type SRList[E] = Stream[Digit[E]]
 }
 
 class RedundantZerolessBinaryRandomAccessList[E] extends RandomAccessList[E, SRList[E]] {
-  override def empty: SRList[E] = Nil
+  override def empty: SRList[E] = Empty
 
   override def isEmpty: (SRList[E]) => Boolean = _.isEmpty
 
   def link(t1: Tree[E], t2: Tree[E]): Tree[E] = Node(t1.size + t2.size, t1, t2)
 
   def consTree(t: Tree[E], l: SRList[E]): SRList[E] = l match {
-    case Nil => List(One(t))
-    case One(t1) :: ds => Two(t, t1) :: ds
-    case Two(t1, t2) :: ds => Three(t, t1, t2) :: ds
-    case Three(t1, t2, t3) :: ds => Two(t, t1) :: consTree(link(t2, t3), ds)
+    case Empty => Stream(One(t))
+    case One(t1) #:: ds => Two(t, t1) #:: ds
+    case Two(t1, t2) #:: ds => Three(t, t1, t2) #:: ds
+    case Three(t1, t2, t3) #:: ds => Two(t, t1) #:: consTree(link(t2, t3), ds)
   }
 
   override def cons: (SRList[E], E) => SRList[E] = {
@@ -47,22 +49,22 @@ class RedundantZerolessBinaryRandomAccessList[E] extends RandomAccessList[E, SRL
   }
 
   override def head: (SRList[E]) => E = {
-    case Nil => throw new IllegalArgumentException("head called on an empty list")
-    case One(Leaf(x)) :: _ => x
-    case Two(Leaf(x), _) :: _ => x
-    case Three(Leaf(x), _, _) :: _ => x
+    case Empty => throw new IllegalArgumentException("head called on an empty list")
+    case One(Leaf(x)) #:: _ => x
+    case Two(Leaf(x), _) #:: _ => x
+    case Three(Leaf(x), _, _) #:: _ => x
   }
 
   override def tail: (SRList[E]) => SRList[E] = ts => {
 
     def unconsTree(l: SRList[E]): (Tree[E], SRList[E]) = l match {
-      case Nil => throw new IllegalArgumentException("tail called on an empty list")
-      case One(t) :: Nil => (t, Nil)
-      case Two(t1, t2) :: ds => (t1, One(t2) :: ds)
-      case Three(t1, t2, t3) :: ds => (t1, Two(t2, t3) :: ds)
-      case One(t) :: ds =>
+      case Empty => throw new IllegalArgumentException("tail called on an empty list")
+      case One(t) #:: Empty => (t, Empty)
+      case Two(t1, t2) #:: ds => (t1, One(t2) #:: ds)
+      case Three(t1, t2, t3) #:: ds => (t1, Two(t2, t3) #:: ds)
+      case One(t) #:: ds =>
         val (Node(_, t1, t2), rest) = unconsTree(ds)
-        (t, Two(t1, t2) :: rest)
+        (t, Two(t1, t2) #:: rest)
     }
 
     val (_, ts1) = unconsTree(ts)
@@ -88,56 +90,56 @@ class RedundantZerolessBinaryRandomAccessList[E] extends RandomAccessList[E, SRL
   }
 
   override def lookup: (Int, SRList[E]) => E = {
-    case (_, Nil) => throw Subscript()
-    case (i, One(t) :: _) if i < t.size => lookupTree(i, t)
-    case (i, One(t) :: ts) => lookup(i - t.size, ts)
-    case (i, Two(t1, _) :: _) if i < t1.size => lookupTree(i, t1)
-    case (i, Two(t1, t2) :: _) if i < 2 * t1.size => lookupTree(i - t1.size, t2)
-    case (i, Two(t1, _) :: ts) => lookup(i - 2 * t1.size, ts)
-    case (i, Three(t1, _, _) :: _) if i < t1.size => lookupTree(i, t1)
-    case (i, Three(t1, t2, _) :: _) if i < 2 * t1.size => lookupTree(i - t1.size, t2)
-    case (i, Three(t1, _, t3) :: _) if i < 3 * t1.size => lookupTree(i - 2 * t1.size, t3)
-    case (i, Three(t1, _, _) :: ts) => lookup(i - 3 * t1.size, ts)
+    case (_, Empty) => throw Subscript()
+    case (i, One(t) #:: _) if i < t.size => lookupTree(i, t)
+    case (i, One(t) #:: ts) => lookup(i - t.size, ts)
+    case (i, Two(t1, _) #:: _) if i < t1.size => lookupTree(i, t1)
+    case (i, Two(t1, t2) #:: _) if i < 2 * t1.size => lookupTree(i - t1.size, t2)
+    case (i, Two(t1, _) #:: ts) => lookup(i - 2 * t1.size, ts)
+    case (i, Three(t1, _, _) #:: _) if i < t1.size => lookupTree(i, t1)
+    case (i, Three(t1, t2, _) #:: _) if i < 2 * t1.size => lookupTree(i - t1.size, t2)
+    case (i, Three(t1, _, t3) #:: _) if i < 3 * t1.size => lookupTree(i - 2 * t1.size, t3)
+    case (i, Three(t1, _, _) #:: ts) => lookup(i - 3 * t1.size, ts)
   }
 
   override def update: (Int, E, SRList[E]) => SRList[E] = {
-    case (_, _, Nil) => throw Subscript()
-    case (i, y, One(t) :: ts) if i < t.size => One(updateTree(i, y, t)) :: ts
-    case (i, y, One(t) :: ts) => One(t) :: update(i - t.size, y, ts)
-    case (i, y, Two(t1, t2) :: ts) if i < t1.size => Two(updateTree(i, y, t1), t2) :: ts
-    case (i, y, Two(t1, t2) :: ts) if i < 2 * t1.size => Two(t1, updateTree(i - t1.size, y, t2)) :: ts
-    case (i, y, Two(t1, t2) :: ts) => Two(t1, t2) :: update(i - 2 * t1.size, y, ts)
-    case (i, y, Three(t1, t2, t3) :: ts) if i < t1.size => Three(updateTree(i, y, t1), t2, t3) :: ts
-    case (i, y, Three(t1, t2, t3) :: ts) if i < 2 * t1.size => Three(t1, updateTree(i - t1.size, y, t2), t3) :: ts
-    case (i, y, Three(t1, t2, t3) :: ts) if i < 3 * t1.size => Three(t1, t2, updateTree(i - 2 * t1.size, y, t3)) :: ts
-    case (i, y, Three(t1, t2, t3) :: ts) => Three(t1, t2, t3) :: update(i - 3 * t1.size, y, ts)
+    case (_, _, Empty) => throw Subscript()
+    case (i, y, One(t) #:: ts) if i < t.size => One(updateTree(i, y, t)) #:: ts
+    case (i, y, One(t) #:: ts) => One(t) #:: update(i - t.size, y, ts)
+    case (i, y, Two(t1, t2) #:: ts) if i < t1.size => Two(updateTree(i, y, t1), t2) #:: ts
+    case (i, y, Two(t1, t2) #:: ts) if i < 2 * t1.size => Two(t1, updateTree(i - t1.size, y, t2)) #:: ts
+    case (i, y, Two(t1, t2) #:: ts) => Two(t1, t2) #:: update(i - 2 * t1.size, y, ts)
+    case (i, y, Three(t1, t2, t3) #:: ts) if i < t1.size => Three(updateTree(i, y, t1), t2, t3) #:: ts
+    case (i, y, Three(t1, t2, t3) #:: ts) if i < 2 * t1.size => Three(t1, updateTree(i - t1.size, y, t2), t3) #:: ts
+    case (i, y, Three(t1, t2, t3) #:: ts) if i < 3 * t1.size => Three(t1, t2, updateTree(i - 2 * t1.size, y, t3)) #:: ts
+    case (i, y, Three(t1, t2, t3) #:: ts) => Three(t1, t2, t3) #:: update(i - 3 * t1.size, y, ts)
   }
 
   def expand(l: SRList[E], n: Int): SRList[E] = l match {
-    case Nil => Nil
-    case One(Leaf(t)) :: ts => One(Leaf(t)) :: expand(ts, 2)
-    case Two(Leaf(t1), Leaf(t2)) :: ts => Two(Leaf(t1), Leaf(t2)) :: expand(ts, 2)
-    case Three(Leaf(t1), Leaf(t2), Leaf(t3)) :: ts => Three(Leaf(t1), Leaf(t2), Leaf(t3)) :: expand(ts, 2)
-    case One(Node(`n`, t1, t2)) :: ts => One(Node(`n`, t1, t2)) :: expand(ts, n * 2)
-    case Two(Node(`n`, t1, t2), t3) :: ts => Two(Node(`n`, t1, t2), t3) :: expand(ts, n * 2)
-    case Three(Node(`n`, t1, t2), t3, t4) :: ts => Three(Node(`n`, t1, t2), t3, t4) :: expand(ts, n * 2)
-    case One(Node(_, t1, t2)) :: ts => expand(Two(t1, t2) :: ts, n)
-    case Two(Node(_, t1, t2), t3) :: ts => expand(Two(t1, t2) :: One(t3) :: ts, n)
-    case Three(Node(_, t1, t2), t3, t4) :: ts => expand(Two(t1, t2) :: Two(t3, t4) :: ts, n)
+    case Empty => Empty
+    case One(Leaf(t)) #:: ts => One(Leaf(t)) #:: expand(ts, 2)
+    case Two(Leaf(t1), Leaf(t2)) #:: ts => Two(Leaf(t1), Leaf(t2)) #:: expand(ts, 2)
+    case Three(Leaf(t1), Leaf(t2), Leaf(t3)) #:: ts => Three(Leaf(t1), Leaf(t2), Leaf(t3)) #:: expand(ts, 2)
+    case One(Node(`n`, t1, t2)) #:: ts => One(Node(`n`, t1, t2)) #:: expand(ts, n * 2)
+    case Two(Node(`n`, t1, t2), t3) #:: ts => Two(Node(`n`, t1, t2), t3) #:: expand(ts, n * 2)
+    case Three(Node(`n`, t1, t2), t3, t4) #:: ts => Three(Node(`n`, t1, t2), t3, t4) #:: expand(ts, n * 2)
+    case One(Node(_, t1, t2)) #:: ts => expand(Two(t1, t2) #:: ts, n)
+    case Two(Node(_, t1, t2), t3) #:: ts => expand(Two(t1, t2) #:: One(t3) #:: ts, n)
+    case Three(Node(_, t1, t2), t3, t4) #:: ts => expand(Two(t1, t2) #:: Two(t3, t4) #:: ts, n)
   }
 
   def drop(n: Int, l: SRList[E]): SRList[E] = {
     def drop1(n: Int, l: SRList[E]): SRList[E] = (n, l) match {
       case (0, _) => l
-      case (_, Nil) => throw Subscript()
-      case (_, One(t) :: ts) if n >= t.size => drop1(n - t.size, ts)
+      case (_, Empty) => throw Subscript()
+      case (_, One(t) #:: ts) if n >= t.size => drop1(n - t.size, ts)
 
-      case (_, Two(t1, _) :: ts) if n >= t1.size * 2 => drop1(n - 2 * t1.size, ts)
-      case (_, Two(t1, t2) :: ts) if n >= t1.size => drop1(n - t1.size, One(t2) :: ts)
+      case (_, Two(t1, _) #:: ts) if n >= t1.size * 2 => drop1(n - 2 * t1.size, ts)
+      case (_, Two(t1, t2) #:: ts) if n >= t1.size => drop1(n - t1.size, One(t2) #:: ts)
 
-      case (_, Three(t1, _, _) :: ts) if n >= t1.size * 3 => drop1(n - 3 * t1.size, ts)
-      case (_, Three(t1, _, t3) :: ts) if n >= t1.size * 2 => drop1(n - 2 * t1.size, One(t3) :: ts)
-      case (_, Three(t1, t2, t3) :: ts) if n >= t1.size => drop1(n - t1.size, Two(t2, t3) :: ts)
+      case (_, Three(t1, _, _) #:: ts) if n >= t1.size * 3 => drop1(n - 3 * t1.size, ts)
+      case (_, Three(t1, _, t3) #:: ts) if n >= t1.size * 2 => drop1(n - 2 * t1.size, One(t3) #:: ts)
+      case (_, Three(t1, t2, t3) #:: ts) if n >= t1.size => drop1(n - t1.size, Two(t2, t3) #:: ts)
 
       case _ => drop1(n, expand(l, 1))
     }
