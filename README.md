@@ -29,6 +29,7 @@ We'll track progress against an expanded version of Haskell code ToC (App. A):
 - [x] Random-Access Lists
  - [x] Binary
  - [x] Zeroless Binary
+ - [x] Redundant Zeroless Binary
  - [ ] Skew Binary
  - [ ] Binary (alternative)
 - [ ] Heaps
