@@ -1,7 +1,7 @@
 Okasaki/Scala
 =============
 
-The code here is an implementation of data structures and solutions to exercises from the great book
+The code here is a Scala implementation of data structures and solutions to exercises from the great book
  ["Purely Functional Data Structures" by Chris Okasaki](http://www.amazon.com/Purely-Functional-Structures-Chris-Okasaki/dp/0521663504).
 
 Progress
