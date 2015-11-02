@@ -40,6 +40,7 @@ We'll track progress against an expanded version of Haskell code ToC (App. A):
  - [x] Pairing
  - [x] Lazy Pairing
  - [x] Scheduled Binomial
+ - [x] Segmented Binomial
  - [ ] Skew Binomial
  - [ ] Bootstrapped
 - [x] Sortable Collections

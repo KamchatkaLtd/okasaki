@@ -7,7 +7,7 @@ import org.specs2.mutable.Specification
 /**
  * Copyright (C) 2015 Kamchatka Ltd
  */
-abstract class HeapSpec[E, H](heap: Heap[E, H]) extends Specification with ScalaCheck {
+abstract class HeapSpec[E, H](var heap: Heap[E, H]) extends Specification with ScalaCheck {
 
   implicit def elements: Arbitrary[E]
 
@@ -52,6 +52,7 @@ abstract class HeapSpec[E, H](heap: Heap[E, H]) extends Specification with Scala
       (h1: H, h2: H) =>
         val h = heap.merge(h1, h2)
         heap.ord.lteq(heap.findMin(h), heap.findMin(h1)) should beTrue
+        heap.ord.lteq(heap.findMin(h), heap.findMin(h2)) should beTrue
     }
   }
 
