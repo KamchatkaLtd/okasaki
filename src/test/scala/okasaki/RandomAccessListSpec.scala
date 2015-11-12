@@ -14,6 +14,17 @@ abstract class RandomAccessListSpec[E, RL, RAL <: RandomAccessList[E, RL]](val l
 
   implicit def elements: Arbitrary[E]
 
+  case class ListWithIndex(l: List[E], i: Int) {
+    assert(i >= 0 && i < l.size)
+  }
+
+  case class ListWithTwoIndices(l: List[E], i: Int, j: Int) {
+    assert(i >= 0 && i < l.size)
+    assert(j >= 0 && j < l.size)
+
+    def distinct: Boolean = i != j
+  }
+
   "A list" should {
     "Maintain the order" ! prop {
       xs: List[E] =>
@@ -22,8 +33,8 @@ abstract class RandomAccessListSpec[E, RL, RAL <: RandomAccessList[E, RL]](val l
     }
 
     "Allow random lookup" ! prop {
-      xs: (List[E], Int) =>
-        val (l, i) = xs
+      xs: ListWithIndex =>
+        val ListWithIndex(l, i) = xs
 
         val xs1 = fromList(l)
 
@@ -31,8 +42,8 @@ abstract class RandomAccessListSpec[E, RL, RAL <: RandomAccessList[E, RL]](val l
     }
 
     "Allow random update" ! prop {
-      (xs: (List[E], Int), e: E) =>
-        val (l, i) = xs
+      (xs: ListWithIndex, e: E) =>
+        val ListWithIndex(l, i) = xs
 
         val xs1 = list.update(i, e, fromList(l))
 
@@ -40,8 +51,8 @@ abstract class RandomAccessListSpec[E, RL, RAL <: RandomAccessList[E, RL]](val l
     }
 
     "Random update is non-breaking" ! prop {
-      (xs: (List[E], Int, Int), e: E) => (xs._2 != xs._3) ==> {
-        val (l, i, j) = xs
+      (xs: ListWithTwoIndices, e: E) => xs.distinct ==>  {
+        val ListWithTwoIndices(l, i, j) = xs
 
         val xs1 = list.update(i, e, fromList(l))
 
@@ -57,16 +68,16 @@ abstract class RandomAccessListSpec[E, RL, RAL <: RandomAccessList[E, RL]](val l
     if (list.isEmpty(xs)) Nil
     else list.head(xs) :: drain(list.tail(xs))
 
-  lazy implicit val listWithIndex: Arbitrary[(List[E], Int)] =
+  lazy implicit val listWithIndex: Arbitrary[ListWithIndex] =
     Arbitrary(for {
       xs <- arbitrary[List[E]]
       i <- choose(0, xs.size - 1)
-    } yield xs -> i)
+    } yield ListWithIndex(xs, i))
 
-  lazy implicit val listWithTwoDistinctIndexes: Arbitrary[(List[E], Int, Int)] =
+  lazy implicit val listWithTwoDistinctIndexes: Arbitrary[ListWithTwoIndices] =
     Arbitrary(for {
       xs <- arbitrary[List[E]]
       i <- choose(0, xs.size - 1)
       j <- choose(0, xs.size - 1)
-    } yield (xs, i, j))
+    } yield ListWithTwoIndices(xs, i, j))
 }
