@@ -54,12 +54,12 @@ object SegmentedRedundantBinaryNumbers {
     case Ones(n) :: ds => Two :: ones(n - 1, ds)
     case Two :: ds => threes(1, ds)
     case Threes(n) :: ds => Four :: threes(n - 1, ds)
-    case Four :: ds => Zero :: simpleInc(ds)
+    case Four :: ds => Two :: simpleInc(ds)
   }
 
   def simpleDec(x: Number): Number = x match {
     case Nil => throw new IllegalArgumentException("Cannot decrement zero")
-    case Zero :: ds => Four :: simpleDec(ds)
+    case Zero :: ds => ones(1, simpleDec(ds))
     case Ones(n) :: ds => Zero :: ones(n - 1, ds)
     case Two :: ds => ones(1, ds)
     case Threes(n) :: ds => Two :: threes(n - 1, ds)
@@ -70,7 +70,7 @@ object SegmentedRedundantBinaryNumbers {
     case Zero :: Nil => Nil
     case Zero :: ds => Two :: simpleDec(ds)
     case Ones(n) :: Zero :: ds => Ones(n) :: Zero :: simpleDec(ds)
-    case Threes(n) :: Four :: ds => Threes(n) :: Zero :: simpleInc(ds)
+    case Threes(n) :: Four :: ds => Threes(n) :: Two :: simpleInc(ds)
     case Four :: ds => Two :: simpleInc(ds)
     case _ => x
   }
