@@ -41,7 +41,7 @@ We'll track progress against an expanded version of Haskell code ToC (App. A):
  - [x] Lazy Pairing
  - [x] Scheduled Binomial
  - [x] Segmented Binomial
- - [ ] Skew Binomial
+ - [x] Skew Binomial
  - [ ] Bootstrapped
 - [x] Sortable Collections
  - [x] Bottom-up Mergesort
