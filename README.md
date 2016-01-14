@@ -31,7 +31,7 @@ We'll track progress against an expanded version of Haskell code ToC (App. A):
  - [x] Zeroless Binary
  - [x] Redundant Zeroless Binary
  - [x] Skew Binary
- - [ ] Binary (alternative)
+ - [x] Binary (alternative)
 - [ ] Heaps
  - [x] Leftist
  - [x] Weight-Biased Leftist
