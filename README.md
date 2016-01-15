@@ -15,7 +15,7 @@ We'll track progress against an expanded version of Haskell code ToC (App. A):
  - [x] Physicist's
  - [x] Real-time
  - [x] Hood-Melville
- - [ ] Bootstrapped
+ - [x] Bootstrapped
  - [ ] Implicit
 - [x] Deques
  - [x] Batched
