@@ -21,8 +21,8 @@ We'll track progress against an expanded version of Haskell code ToC (App. A):
  - [x] Batched
  - [x] Banker's
  - [x] Real-time
-- [ ] Catenable Lists
- - [ ] Bootstrapped
+- [x] Catenable Lists
+ - [x] Bootstrapped
 - [ ] Catenable Deques
  - [ ] Simple
  - [ ] Implicit
