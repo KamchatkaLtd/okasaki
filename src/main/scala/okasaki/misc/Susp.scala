@@ -15,4 +15,6 @@ class Susp[T](x: => T) {
   lazy val forced: T = x
 
   def apply(): T = forced
+
+  override def toString = "Susp(???)"
 }

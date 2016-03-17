@@ -11,13 +11,20 @@ object CatenableListFromQueue {
 
   sealed trait CatList[+Q[_], +E]
 
-  object Empty extends CatList[Nothing, Nothing]
+  object Empty extends CatList[Nothing, Nothing] {
+    override def toString = "Empty"
+  }
 
-  case class C[Q[_], E](x: E, q: Q[Susp[CatList[Q, E]]]) extends CatList[Q, E]
+  case class C[Q[_], E](x: E, q: Q[Susp[CatList[Q, E]]]) extends CatList[Q, E] {
+    override def toString = s"C($x, $q)"
+  }
 }
 
-class CatenableListFromQueue[E, QBS[_]](q: Queue[Susp[CatList[QBS, E]], QBS[Susp[CatList[QBS, E]]]])
-      extends CatenableList[E, CatList[QBS, E]] {
+trait CatenableListFromQueue[E, QBS[_]] extends CatenableList[E, CatList[QBS, E]] {
+
+  type Q = Queue[Susp[CatList[QBS, E]], QBS[Susp[CatList[QBS, E]]]]
+
+  def q: Q
 
   type CL = CatList[QBS, E]
 
@@ -36,28 +43,24 @@ class CatenableListFromQueue[E, QBS[_]](q: Queue[Susp[CatList[QBS, E]], QBS[Susp
 
   val empty = Empty
 
-  def isEmpty = _ == Empty
+  def isEmpty(cl: CL) = cl == Empty
 
-  def cons = {
-    case (e, cl) => link(just(e), Susp(cl))
-  }
+  def cons(e: E, cl: CL) = ++(just(e), cl)
 
-  def snoc = {
-    case (cl, e) => link(cl, Susp(just(e)))
-  }
+  def snoc(cl: CL, e: E) = ++(cl, just(e))
 
-  def ++ = {
+  def ++(a: CL, b: CL) = (a, b) match {
     case (Empty, y) => y
     case (x, Empty) => x
     case (x, y) => link(x, Susp(y))
   }
 
-  def head = {
+  def head(cl: CL) = cl match {
     case Empty => throw new IllegalArgumentException("head called on an empty list")
     case C(e, _) => e
   }
 
-  def tail = {
+  def tail(cl: CL) = cl match {
     case Empty => throw new IllegalArgumentException("head called on an empty list")
     case C(_, cls) if q.isEmpty(cls) => Empty
     case C(_, cls) => linkAll(cls)

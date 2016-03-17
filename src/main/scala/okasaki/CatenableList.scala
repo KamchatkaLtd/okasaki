@@ -7,15 +7,15 @@ trait CatenableList[E, CL] {
 
   def empty: CL
 
-  def isEmpty: CL => Boolean
+  def isEmpty(cl: CL): Boolean
 
-  def cons: (E, CL) => CL
+  def cons(e: E, cl: CL): CL
 
-  def snoc: (CL, E) => CL
+  def snoc(cl: CL, e: E): CL
 
-  def ++ : (CL, CL) => CL
+  def ++(a: CL, b: CL): CL
 
-  def head: CL => E
+  def head(cl: CL): E
 
-  def tail: CL => CL
+  def tail(cl: CL): CL
 }
