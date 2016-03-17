@@ -19,7 +19,7 @@ object BankersDeque {
 class BankersDeque[E](c: Int) extends Deque[E, Repr[E]] {
   override def empty: Repr[E] = Repr(0, Empty, 0, Empty)
 
-  override def isEmpty: (Repr[E]) => Boolean = _.length == 0
+  override def isEmpty(q: Repr[E]): Boolean = q.length == 0
 
   def check(q: Repr[E]): Repr[E] = q match {
     case Repr(lenf, f, lenr, r) if lenf > c * lenr + 1 =>
@@ -37,33 +37,33 @@ class BankersDeque[E](c: Int) extends Deque[E, Repr[E]] {
     case _ => q
   }
 
-  override def snoc: (Repr[E], E) => Repr[E] = {
+  override def snoc(q: Repr[E], e: E): Repr[E] = (q, e) match {
     case (Repr(lenf, f, lenr, r), x) => check(Repr(lenf, f, lenr + 1, x #:: r))
   }
 
-  override def tail: (Repr[E]) => Repr[E] = {
+  override def tail(q: Repr[E]): Repr[E] = q match {
     case Repr(_, Empty, _, Empty) => throw new IllegalStateException("tail called on an empty deque")
     case Repr(_, Empty, _, _ #:: _) => empty
     case Repr(lenf, _ #:: f, lenr, r) => check(Repr(lenf - 1, f, lenr, r))
   }
 
-  override def head: (Repr[E]) => E = {
+  override def head(q: Repr[E]): E = q match {
     case Repr(_, Empty, _, Empty) => throw new IllegalStateException("head called on an empty deque")
     case Repr(_, Empty, _, x #:: _) => x
     case Repr(_, x #:: _, _, _) => x
   }
 
-  override def cons: (Repr[E], E) => Repr[E] = {
-    case (Repr(lenf, f, lenr, r), x) => check(Repr(lenf + 1, x #:: f, lenr, r))
+  override def cons(q: Repr[E], x: E): Repr[E] = q match {
+    case Repr(lenf, f, lenr, r) => check(Repr(lenf + 1, x #:: f, lenr, r))
   }
 
-  override def init: (Repr[E]) => Repr[E] = {
+  override def init(q: Repr[E]): Repr[E] = q match {
     case Repr(_, Empty, _, Empty) => throw new IllegalStateException("init called on an empty deque")
     case Repr(_, _ #:: _, _, Empty) => empty
     case Repr(lenf, f, lenr, _ #:: r) => check(Repr(lenf, f, lenr - 1, r))
   }
 
-  override def last: (Repr[E]) => E = {
+  override def last(q: Repr[E]): E = q match {
     case Repr(_, Empty, _, Empty) => throw new IllegalStateException("last called on an empty deque")
     case Repr(_, x #:: _, _, Empty) => x
     case Repr(_, _, _, x #:: _) => x

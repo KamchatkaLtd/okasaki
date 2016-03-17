@@ -6,11 +6,11 @@ package okasaki
 trait Queue[E, Q] {
   def empty: Q
 
-  def isEmpty: Q => Boolean
+  def isEmpty(q: Q): Boolean
 
-  def snoc: (Q, E) => Q
+  def snoc(q: Q, e: E): Q
 
-  def head: Q => E
+  def head(q: Q): E
 
-  def tail: Q => Q
+  def tail(q: Q): Q
 }

@@ -33,7 +33,7 @@ class IndexedHoodMelvilleQueue[E] extends Queue[E, Repr[E]] {
 
   override def empty: Repr[E] = Repr(0, ral.empty, Idle, 0, ral.empty)
 
-  override def isEmpty: (Repr[E]) => Boolean = _.lenf == 0
+  override def isEmpty(q: Repr[E]): Boolean = q.lenf == 0
 
   def exec(state: RotationState[E]): RotationState[E] = state match {
     case Reversing(ok, f, f1, r, r1) if !ral.isEmpty(f) =>
@@ -75,13 +75,13 @@ class IndexedHoodMelvilleQueue[E] extends Queue[E, Repr[E]] {
       execute(Repr(q.size, q.f, newstate, 0, ral.empty), execTwice)
     }
 
-  override def snoc: (Repr[E], E) => Repr[E] = {
-    case (Repr(lenf, f, state, lenr, r), x) => check(Repr(lenf, f, state, lenr + 1, ral.cons(r, x)))
+  override def snoc(q: Repr[E], x: E): Repr[E] = q match {
+    case Repr(lenf, f, state, lenr, r) => check(Repr(lenf, f, state, lenr + 1, ral.cons(r, x)))
   }
 
-  override def head: (Repr[E]) => E = r => ral.head(r.f)
+  override def head(q: Repr[E]): E = ral.head(q.f)
 
-  override def tail: (Repr[E]) => Repr[E] = {
+  override def tail(q: Repr[E]): Repr[E] = q match {
     case Repr(_, f, _, _, _) if ral.isEmpty(f) => throw new IllegalStateException("tail called on an empty queue")
     case Repr(lenf, f, state, lenr, r) =>
       check(Repr(lenf - 1, ral.tail(f), invalidate(state), lenr, r))

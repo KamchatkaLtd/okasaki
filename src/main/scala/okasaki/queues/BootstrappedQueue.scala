@@ -55,11 +55,11 @@ class BootstrappedQueue[E] extends Queue[E, BQueue[E]] {
 
   override def empty: BQueue[E] = Empty
 
-  override def isEmpty: (BQueue[E]) => Boolean = _ == Empty
+  override def isEmpty(q: BQueue[E]): Boolean = q == Empty
 
-  override def snoc: (BQueue[E], E) => BQueue[E] = BootstrappedQueue.snoc
+  override def snoc(q: BQueue[E], x: E): BQueue[E] = BootstrappedQueue.snoc(q, x)
 
-  override def tail: (BQueue[E]) => BQueue[E] = BootstrappedQueue.tail
+  override def tail(q: BQueue[E]): BQueue[E] = BootstrappedQueue.tail(q)
 
-  override def head: (BQueue[E]) => E = BootstrappedQueue.head
+  override def head(q: BQueue[E]): E = BootstrappedQueue.head(q)
 }

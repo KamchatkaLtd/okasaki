@@ -1,32 +1,37 @@
 package okasaki.queues
 
 import okasaki.Queue
+import okasaki.queues.BankersQueue.Repr
 
 import scala.collection.immutable.Stream.Empty
 
 /**
  * Copyright (C) 2015 Kamchatka Ltd
  */
-class BankersQueue[E] extends Queue[E, (Int, Stream[E], Int, Stream[E])] {
-  override def empty: (Int, Stream[E], Int, Stream[E]) = (0, Empty, 0, Empty)
+object BankersQueue {
+  type Repr[E] = (Int, Stream[E], Int, Stream[E])
+}
 
-  override def isEmpty: ((Int, Stream[E], Int, Stream[E])) => Boolean = _._1 == 0
+class BankersQueue[E] extends Queue[E, Repr[E]] {
+  override def empty: Repr[E] = (0, Empty, 0, Empty)
 
-  val check: (Int, Stream[E], Int, Stream[E]) => (Int, Stream[E], Int, Stream[E]) = {
-    case (lenf, f, lenr, r) if lenr > lenf => (lenf + lenr, f #::: r.reverse, 0, Empty)
-    case q => q
+  override def isEmpty(q: Repr[E]): Boolean = q._1 == 0
+
+  def check(q: Repr[E]): Repr[E] = {
+    val (lenf, f, lenr, r) = q
+    if (lenr > lenf) (lenf + lenr, f #::: r.reverse, 0, Empty) else q
   }
 
-  override def snoc: ((Int, Stream[E], Int, Stream[E]), E) => (Int, Stream[E], Int, Stream[E]) = {
-    case ((lenf, f, lenr, r), x) => check(lenf, f, lenr + 1, x #:: r)
+  override def snoc(q: Repr[E], x: E): Repr[E] = q match {
+    case (lenf, f, lenr, r) => check(lenf, f, lenr + 1, x #:: r)
   }
 
-  override def head: ((Int, Stream[E], Int, Stream[E])) => E = {
+  override def head(q: Repr[E]): E = q match {
     case (0, _, _, _) => throw new IllegalStateException("head called on an empty queue")
     case (_, (x #:: _), _, _) => x
   }
 
-  override def tail: ((Int, Stream[E], Int, Stream[E])) => (Int, Stream[E], Int, Stream[E]) = {
+  override def tail(q: Repr[E]): Repr[E] = q match {
     case (0, _, _, _) => throw new IllegalStateException("tail called on an empty queue")
     case (lenf, (_ #:: f), lenr, r) => check(lenf - 1, f, lenr, r)
   }

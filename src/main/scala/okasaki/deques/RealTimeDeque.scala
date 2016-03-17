@@ -19,7 +19,7 @@ object RealTimeDeque {
 class RealTimeDeque[E](c: Int) extends Deque[E, Repr[E]] {
   override def empty: Repr[E] = Repr(0, Empty, Empty, 0, Empty, Empty)
 
-  override def isEmpty: (Repr[E]) => Boolean = _.length == 0
+  override def isEmpty(q: Repr[E]): Boolean = q.length == 0
 
   def rotateDrop(f: Stream[E], j: Int, r: Stream[E]): Stream[E] =
     if (j < c) rotateRev(f, r drop j, Empty)
@@ -55,33 +55,33 @@ class RealTimeDeque[E](c: Int) extends Deque[E, Repr[E]] {
     case _ => q
   }
 
-  override def snoc: (Repr[E], E) => Repr[E] = {
-    case (Repr(lenf, f, sf, lenr, r, sr), x) => check(Repr(lenf, f, exec1(sf), lenr + 1, x #:: r, exec1(sr)))
+  override def snoc(q: Repr[E], x: E): Repr[E] = q match {
+    case Repr(lenf, f, sf, lenr, r, sr) => check(Repr(lenf, f, exec1(sf), lenr + 1, x #:: r, exec1(sr)))
   }
 
-  override def tail: (Repr[E]) => Repr[E] = {
+  override def tail(q: Repr[E]): Repr[E] = q match {
     case Repr(_, Empty, _, _, Empty, _) => throw new IllegalStateException("tail called on an empty deque")
     case Repr(_, Empty, _, _, _ #:: _, _) => empty
     case Repr(lenf, _ #:: f, sf, lenr, r, sr) => check(Repr(lenf - 1, f, exec2(sf), lenr, r, exec2(sr)))
   }
 
-  override def head: (Repr[E]) => E = {
+  override def head(q: Repr[E]): E = q match {
     case Repr(_, Empty, _, _, Empty, _) => throw new IllegalStateException("head called on an empty deque")
     case Repr(_, Empty, _, _, x #:: _, _) => x
     case Repr(_, x #:: _, _, _, _, _) => x
   }
 
-  override def cons: (Repr[E], E) => Repr[E] = {
-    case (Repr(lenf, f, sf, lenr, r, sr), x) => check(Repr(lenf + 1, x #:: f, exec1(sf), lenr, r, exec1(sr)))
+  override def cons(q: Repr[E], x: E): Repr[E] = q match {
+    case Repr(lenf, f, sf, lenr, r, sr) => check(Repr(lenf + 1, x #:: f, exec1(sf), lenr, r, exec1(sr)))
   }
 
-  override def init: (Repr[E]) => Repr[E] = {
+  override def init(q: Repr[E]): Repr[E] = q match {
     case Repr(_, Empty, _, _, Empty, _) => throw new IllegalStateException("init called on an empty deque")
     case Repr(_, _ #:: _, _, _, Empty, _) => empty
     case Repr(lenf, f, sf, lenr, _ #:: r, sr) => check(Repr(lenf, f, exec2(sf), lenr - 1, r, exec2(sr)))
   }
 
-  override def last: (Repr[E]) => E = {
+  override def last(q: Repr[E]): E = q match {
     case Repr(_, Empty, _, _, Empty, _) => throw new IllegalStateException("last called on an empty deque")
     case Repr(_, x #:: _, _, _, Empty, _) => x
     case Repr(_, _, _, _, x #:: _, _) => x

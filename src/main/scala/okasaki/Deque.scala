@@ -4,7 +4,7 @@ package okasaki
  * Copyright (C) 2015 Kamchatka Ltd
  */
 trait Deque[E, Q] extends OutputRestrictedDeque[E, Q] {
-  def init: Q => Q
+  def init(q: Q): Q
 
-  def last: Q => E
+  def last(q: Q): E
 }

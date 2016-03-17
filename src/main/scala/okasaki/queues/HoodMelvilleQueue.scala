@@ -27,7 +27,7 @@ object HoodMelvilleQueue {
 class HoodMelvilleQueue[E] extends Queue[E, Repr[E]] {
   override def empty: Repr[E] = Repr(0, Nil, Idle, 0, Nil)
 
-  override def isEmpty: (Repr[E]) => Boolean = _.lenf == 0
+  override def isEmpty(q: Repr[E]): Boolean = q.lenf == 0
 
   def exec(state: RotationState[E]): RotationState[E] = state match {
     case Reversing(ok, x :: f, f1, y :: r, r1) => Reversing(ok + 1, f, x :: f1, r, y :: r1)
@@ -60,16 +60,16 @@ class HoodMelvilleQueue[E] extends Queue[E, Repr[E]] {
       execute(Repr(q.size, q.f, newstate, 0, Nil), execTwice)
     }
 
-  override def snoc: (Repr[E], E) => Repr[E] = {
-    case (Repr(lenf, f, state, lenr, r), x) => check(Repr(lenf, f, state, lenr + 1, x :: r))
+  override def snoc(q: Repr[E], x: E): Repr[E] = q match {
+    case Repr(lenf, f, state, lenr, r) => check(Repr(lenf, f, state, lenr + 1, x :: r))
   }
 
-  override def head: (Repr[E]) => E = {
+  override def head(q: Repr[E]): E = q match {
     case Repr(_, Nil, _, _, _) => throw new IllegalStateException("head called on an empty queue")
     case Repr(_, x :: _, _, _, _) => x
   }
 
-  override def tail: (Repr[E]) => Repr[E] = {
+  override def tail(q: Repr[E]): Repr[E] = q match {
     case Repr(_, Nil, _, _, _) => throw new IllegalStateException("tail called on an empty queue")
     case Repr(lenf, _ :: f, state, lenr, r) =>
       check(Repr(lenf - 1, f, invalidate(state), lenr, r))
