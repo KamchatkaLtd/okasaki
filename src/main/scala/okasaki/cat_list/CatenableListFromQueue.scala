@@ -5,8 +5,8 @@ import okasaki.misc.Susp
 import okasaki.{CatenableList, Queue}
 
 /**
-* Copyright (C) 2016 Kamchatka Ltd
-*/
+ * Copyright (C) 2016 Kamchatka Ltd
+ */
 object CatenableListFromQueue {
 
   sealed trait CatList[+Q[_], +E]
@@ -18,24 +18,25 @@ object CatenableListFromQueue {
   case class C[Q[_], E](x: E, q: Q[Susp[CatList[Q, E]]]) extends CatList[Q, E] {
     override def toString = s"C($x, $q)"
   }
+
 }
 
 trait CatenableListFromQueue[E, QBS[_]] extends CatenableList[E, CatList[QBS, E]] {
 
-  type Q = Queue[Susp[CatList[QBS, E]], QBS[Susp[CatList[QBS, E]]]]
+  type CL = CatList[QBS, E]
+  type SCL = Susp[CL]
+  type Q = Queue[SCL, QBS[SCL]]
 
   def q: Q
 
-  type CL = CatList[QBS, E]
-
   def just(e: E): CL = C(e, q.empty)
 
-  def link(a: CL, b: Susp[CL]): CL = {
+  def link(a: CL, b: SCL): CL = {
     val C(x, a1) = a
     C(x, q.snoc(a1, b))
   }
 
-  def linkAll(cls: QBS[Susp[CL]]): CL = {
+  def linkAll(cls: QBS[SCL]): CL = {
     val t = q.head(cls)
     val q1 = q.tail(cls)
     if (q.isEmpty(q1)) t.apply() else link(t(), Susp(linkAll(q1)))
