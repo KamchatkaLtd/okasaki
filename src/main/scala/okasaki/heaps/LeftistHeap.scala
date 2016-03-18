@@ -7,7 +7,7 @@ import scala.annotation.tailrec
 
 
 /**
- * Copyright (C) 2015 Kamchatka Ltd
+ * Copyright (C) 2015-2016 Kamchatka Ltd
  */
 object LeftistHeap {
 
@@ -47,12 +47,9 @@ class LeftistHeap[E](implicit val ord: Ordering[E]) extends Heap[E, Repr[E]] {
 
   override val empty: Repr[E] = Empty
 
-  override val isEmpty: (Repr[E]) => Boolean = {
-    case Empty => true
-    case _ => false
-  }
+  override def isEmpty(h: Repr[E]): Boolean = h == Empty
 
-  override val merge: (Repr[E], Repr[E]) => Repr[E] = {
+  override def merge(a: Repr[E], b: Repr[E]): Repr[E] = (a, b) match {
     case (h, Empty) => h
     case (Empty, h) => h
     case (h1@SubHeap(_, x, a1, b1), h2@SubHeap(_, y, a2, b2)) =>
@@ -61,19 +58,19 @@ class LeftistHeap[E](implicit val ord: Ordering[E]) extends Heap[E, Repr[E]] {
   }
 
   // Ex. 3.2
-  override val insert: (E, Repr[E]) => Repr[E] = {
-    case (x, Empty) => SubHeap(1, x, Empty, Empty)
-    case (x, SubHeap(_, y, a, b)) =>
+  override def insert(x: E, h: Repr[E]): Repr[E] = h match {
+    case Empty => SubHeap(1, x, Empty, Empty)
+    case SubHeap(_, y, a, b) =>
       if (ord.lteq(x, y)) makeT(x, a, insert(y, b))
       else makeT(y, a, insert(x, b))
   }
 
-  override val findMin: (Repr[E]) => E = {
+  override def findMin(h: Repr[E]): E = {
     case SubHeap(_, x, _, _) => x
     case Empty => throw new IllegalStateException("called findMin on an empty heap")
   }
 
-  override val deleteMin: (Repr[E]) => Repr[E] = {
+  override def deleteMin(h: Repr[E]): Repr[E] = h match {
     case SubHeap(_, _, a, b) => merge(a, b)
     case Empty => throw new IllegalStateException("called deleteMin on an empty heap")
   }

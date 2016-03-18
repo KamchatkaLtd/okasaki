@@ -5,7 +5,7 @@ import okasaki.heaps.LazyBinomialHeap._
 import okasaki.misc.Susp
 
 /**
- * Copyright (C) 2015 Kamchatka Ltd
+ * Copyright (C) 2015-2016 Kamchatka Ltd
  */
 object LazyBinomialHeap {
 
@@ -18,7 +18,7 @@ class LazyBinomialHeap[E](implicit val ord: Ordering[E]) extends Heap[E, LazyBin
 
   override def empty: BHeap[E] = Susp(Nil)
 
-  override def isEmpty: (BHeap[E]) => Boolean = {
+  override def isEmpty(h: BHeap[E]): Boolean = {
     case Susp(Nil) => true
     case _ => false
   }
@@ -38,8 +38,8 @@ class LazyBinomialHeap[E](implicit val ord: Ordering[E]) extends Heap[E, LazyBin
     case t1 :: ts1 => if (rank(t) < rank(t1)) t :: ts else insTree(link(t, t1), ts1)
   }
 
-  override def insert: (E, BHeap[E]) => BHeap[E] = {
-    case (x, ts) => Susp(insTree((0, Node(x, Nil)), ts()))
+  override def insert(x: E, ts: BHeap[E]): BHeap[E] = {
+    Susp(insTree((0, Node(x, Nil)), ts()))
   }
 
   def mrg(ts1: List[(Int, Node[E])], ts2: List[(Int, Node[E])]): List[(Int, Node[E])] = (ts1, ts2) match {
@@ -51,11 +51,11 @@ class LazyBinomialHeap[E](implicit val ord: Ordering[E]) extends Heap[E, LazyBin
       else insTree(link(t1, t2), mrg(ts11, ts22))
   }
 
-  override def merge: (BHeap[E], BHeap[E]) => BHeap[E] = Susp.lift2(mrg)
+  override def merge(a: BHeap[E], b: BHeap[E]): BHeap[E] = Susp.lift2(mrg)(a, b)
 
-  override def findMin: (BHeap[E]) => E = x => root(removeMinTree(x())._1)
+  override def findMin(h: BHeap[E]): E = root(removeMinTree(h())._1)
 
-  override def deleteMin: (BHeap[E]) => BHeap[E] = x => removeMinTree(x()) match {
+  override def deleteMin(h: BHeap[E]): BHeap[E] = removeMinTree(h()) match {
     case ((r, Node(_, ts1)), ts2) => merge(Susp(ts1.map(withRank(r - 1)).reverse), Susp(ts2))
   }
 

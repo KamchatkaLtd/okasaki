@@ -5,7 +5,7 @@ import okasaki.Heap
 import scala.collection.immutable.Stream.Empty
 
 /**
- * Copyright (C) 2015 Kamchatka Ltd
+ * Copyright (C) 2015-2016 Kamchatka Ltd
  */
 object ScheduledBinomialHeap {
 
@@ -28,7 +28,7 @@ class ScheduledBinomialHeap[E](implicit val ord: Ordering[E]) extends Heap[E, Sc
 
   override def empty: Repr[E] = (Empty, Nil)
 
-  override def isEmpty: (Repr[E]) => Boolean = {
+  override def isEmpty(h: Repr[E]): Boolean = h match {
     case (Empty, _) => true
     case _ => false
   }
@@ -66,16 +66,16 @@ class ScheduledBinomialHeap[E](implicit val ord: Ordering[E]) extends Heap[E, Sc
     case _ :: sched => sched
   }
 
-  override def insert: (E, Repr[E]) => Repr[E] = {
-    case (x, (ds, sched)) =>
-      val ds1 = insTree(Node(x, Nil), ds)
-      (ds1, exec(exec(ds1 :: sched)))
+  override def insert(x: E, h: Repr[E]): Repr[E] = {
+    val (ds, sched) = h
+    val ds1 = insTree(Node(x, Nil), ds)
+    (ds1, exec(exec(ds1 :: sched)))
   }
 
-  override def merge: (Repr[E], Repr[E]) => Repr[E] = {
-    case ((ds1, _), (ds2, _)) =>
-      val ds = mrg(ds1, ds2)
-      (ds.force, Nil)
+  override def merge(a: Repr[E], b: Repr[E]): Repr[E] = {
+    val ((ds1, _), (ds2, _)) = (a, b)
+    val ds = mrg(ds1, ds2)
+    (ds.force, Nil)
   }
 
   def removeMinTree(ds: Stream[Digit[E]]): (Node[E], Stream[Digit[E]]) = ds match {
@@ -92,16 +92,16 @@ class ScheduledBinomialHeap[E](implicit val ord: Ordering[E]) extends Heap[E, Sc
       }
   }
 
-  override def findMin: (Repr[E]) => E = {
-    case (ds, _) =>
-      val (Node(x, _), _) = removeMinTree(ds)
-      x
+  override def findMin(h: Repr[E]): E = {
+    val (ds, _) = h
+    val (Node(x, _), _) = removeMinTree(ds)
+    x
   }
 
-  override def deleteMin: (Repr[E]) => Repr[E] = {
-    case (ds, _) =>
-      val (Node(_, c), ds1) = removeMinTree(ds)
-      val ds11 = mrgWithList(c.reverse, ds1)
-      (ds11.force, Nil)
+  override def deleteMin(h: Repr[E]): Repr[E] = {
+    val (ds, _) = h
+    val (Node(_, c), ds1) = removeMinTree(ds)
+    val ds11 = mrgWithList(c.reverse, ds1)
+    (ds11.force, Nil)
   }
 }

@@ -4,7 +4,7 @@ import okasaki.Heap
 import okasaki.heaps.BinomialHeap._
 
 /**
- * Copyright (C) 2015 Kamchatka Ltd
+ * Copyright (C) 2015-2016 Kamchatka Ltd
  */
 object BinomialHeap {
 
@@ -17,7 +17,7 @@ class BinomialHeap[E](implicit val ord: Ordering[E]) extends Heap[E, BinomialHea
 
   override def empty: BHeap[E] = Nil
 
-  override def isEmpty: (BHeap[E]) => Boolean = {
+  override def isEmpty(h: BHeap[E]): Boolean = h match {
     case Nil => true
     case _ => false
   }
@@ -37,11 +37,9 @@ class BinomialHeap[E](implicit val ord: Ordering[E]) extends Heap[E, BinomialHea
     case t1 :: ts1 => if (rank(t) < rank(t1)) t :: ts else insTree(link(t, t1), ts1)
   }
 
-  override def insert: (E, BHeap[E]) => BHeap[E] = {
-    case (x, ts) => insTree((0, Node(x, Nil)), ts)
-  }
+  override def insert(x: E, ts: BHeap[E]): BHeap[E] = insTree((0, Node(x, Nil)), ts)
 
-  override def merge: (BHeap[E], BHeap[E]) => BHeap[E] = {
+  override def merge(a: BHeap[E], b: BHeap[E]): BHeap[E] = (a, b) match {
     case (ts1, Nil) => ts1
     case (Nil, ts2) => ts2
     case (ts1@(t1 :: ts11), ts2@(t2 :: ts22)) =>
@@ -50,14 +48,15 @@ class BinomialHeap[E](implicit val ord: Ordering[E]) extends Heap[E, BinomialHea
       else insTree(link(t1, t2), merge(ts11, ts22))
   }
 
-  override def findMin: (BHeap[E]) => E = {
+  override def findMin(h: BHeap[E]): E = h match {
     case Nil => throw new IllegalStateException("called findMin on an empty heap")
     case t :: Nil => root(t)
     case t :: ts => ord.min(root(t), findMin(ts))
   }
 
-  override def deleteMin: (BHeap[E]) => BHeap[E] = removeMinTree _ andThen {
-    case ((r, Node(x, ts1)), ts2) => merge(ts1.map(withRank(r - 1)).reverse, ts2)
+  override def deleteMin(h: BHeap[E]): BHeap[E] = {
+    val ((r, Node(x, ts1)), ts2) = removeMinTree(h)
+    merge(ts1.map(withRank(r - 1)).reverse, ts2)
   }
 
   def withRank(r: Int)(x: Node[E]): (Int, Node[E]) = (r, x)

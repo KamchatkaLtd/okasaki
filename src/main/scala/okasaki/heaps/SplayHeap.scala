@@ -3,7 +3,7 @@ package okasaki.heaps
 import okasaki.Heap
 
 /**
- * Copyright (C) 2015 Kamchatka Ltd
+ * Copyright (C) 2015-2016 Kamchatka Ltd
  */
 object SplayHeap {
 
@@ -35,7 +35,7 @@ class SplayHeap[E](implicit val ord: Ordering[E]) extends Heap[E, SplayHeap.SHea
 
   override def empty: SHeap[E] = Empty
 
-  override def isEmpty: (SHeap[E]) => Boolean = _ == Empty
+  override def isEmpty(h: SHeap[E]): Boolean = h == Empty
 
   def partition(pivot: E, h: SHeap[E]): (SHeap[E], SHeap[E]) = h match {
     case Empty => (Empty, Empty)
@@ -64,26 +64,25 @@ class SplayHeap[E](implicit val ord: Ordering[E]) extends Heap[E, SplayHeap.SHea
 
   }
 
-  override def insert: (E, SHeap[E]) => SHeap[E] = {
-    case (x, t) =>
-      val (a, b) = partition(x, t)
-      Tree(a, x, b)
+  override def insert(x: E, t: SHeap[E]): SHeap[E] = {
+    val (a, b) = partition(x, t)
+    Tree(a, x, b)
   }
 
-  override def merge: (SHeap[E], SHeap[E]) => SHeap[E] = {
+  override def merge(h1: SHeap[E], h2: SHeap[E]): SHeap[E] = (h1, h2) match {
     case (Empty, t) => t
     case (Tree(a, x, b), t) =>
       val (a1, b1) = partition(x, t)
       Tree(merge(a, a1), x, merge(b, b1))
   }
 
-  override def findMin: (SHeap[E]) => E = {
+  override def findMin(h: SHeap[E]): E = h match {
     case Empty => throw new IllegalStateException("called findMin on an empty heap")
     case Tree(Empty, x, _) => x
     case Tree(a, _, _) => findMin(a)
   }
 
-  override def deleteMin: (SHeap[E]) => SHeap[E] = {
+  override def deleteMin(h: SHeap[E]): SHeap[E] = h match {
     case Empty => throw new IllegalStateException("called deleteMin on an empty heap")
     case Tree(Empty, _, b) => b
     case Tree(Tree(Empty, _, b), y, c) => Tree(b, y, c)

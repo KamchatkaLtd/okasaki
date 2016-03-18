@@ -3,20 +3,20 @@ package okasaki
 /**
  * Fig. 3.1
  *
- * Copyright (C) 2015 Kamchatka Ltd
+ * Copyright (C) 2015-2016 Kamchatka Ltd
  */
 trait Heap[E, H] {
   implicit def ord: Ordering[E]
 
   def empty: H
 
-  def isEmpty: H => Boolean
+  def isEmpty(h: H): Boolean
 
-  def insert: (E, H) => H
+  def insert(x: E, h: H): H
 
-  def merge: (H, H) => H
+  def merge(a: H, b: H): H
 
-  def findMin: H => E
+  def findMin(h: H): E
 
-  def deleteMin: H => H
+  def deleteMin(h: H): H
 }

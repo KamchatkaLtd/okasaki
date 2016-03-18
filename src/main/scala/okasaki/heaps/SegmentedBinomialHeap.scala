@@ -4,6 +4,9 @@ import okasaki.Heap
 
 import scala.collection.immutable.::
 
+/**
+ * Copyright (C) 2015-2016 Kamchatka Ltd
+ */
 object SegmentedBinomialHeap {
 
   case class Node[E](e: E, c: List[Node[E]])
@@ -28,7 +31,7 @@ class SegmentedBinomialHeap[E](implicit val ord: Ordering[E]) extends Heap[E, Se
 
   override def empty: SBHeap[E] = Nil
 
-  override def isEmpty: (SBHeap[E]) => Boolean = _.isEmpty
+  override def isEmpty(h: SBHeap[E]): Boolean = h.isEmpty
 
   def root(t: Node[E]): E = t.e
 
@@ -60,11 +63,9 @@ class SegmentedBinomialHeap[E](implicit val ord: Ordering[E]) extends Heap[E, Se
 
   def insTree(t: Node[E], ts: SBHeap[E]): SBHeap[E] = fixup(simpleIns(t, ts))
 
-  override def insert: (E, SBHeap[E]) => SBHeap[E] = {
-    case (x, ts) => insTree(Node(x, Nil), ts)
-  }
+  override def insert(x: E, ts: SBHeap[E]): SBHeap[E] = insTree(Node(x, Nil), ts)
 
-  override def merge: (SBHeap[E], SBHeap[E]) => SBHeap[E] = {
+  override def merge(a: SBHeap[E], b: SBHeap[E]): SBHeap[E] = (a, b) match {
     case (ds1, Nil) => ds1
     case (Nil, ds2) => ds2
     case (Zero :: ds1, Zero :: ds2) =>
@@ -94,14 +95,14 @@ class SegmentedBinomialHeap[E](implicit val ord: Ordering[E]) extends Heap[E, Se
   }
 
   // _.filterNot(_ == Zero).map(min).reduce(ord.min)
-  override def findMin: (SBHeap[E]) => E = {
+  override def findMin(h: SBHeap[E]): E = h match {
     case Nil => throw new IllegalStateException("called findMin on an empty heap")
     case Zero :: ds => findMin(ds)
     case d :: Nil => min(d)
     case d :: ds => ord.min(min(d), findMin(ds))
   }
 
-  override def deleteMin: (SBHeap[E]) => SBHeap[E] = removeMinTree _ andThen {
+  override def deleteMin(h: SBHeap[E]): SBHeap[E] = removeMinTree(h) match {
     case (Node(_, Nil), ts2) => ts2
     case (Node(_, ts1), ts2) => merge(fixup(ones(ts1.reverse, Nil)), ts2)
   }

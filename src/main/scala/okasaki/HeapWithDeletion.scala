@@ -1,7 +1,7 @@
 package okasaki
 
 /**
- * Copyright (C) 2015 Kamchatka Ltd
+ * Copyright (C) 2015-2016 Kamchatka Ltd
  */
 class HeapWithDeletion[E, H](heap: Heap[E, H]) extends Heap[E, (H, H)] {
   override implicit def ord: Ordering[E] = heap.ord
@@ -28,25 +28,25 @@ class HeapWithDeletion[E, H](heap: Heap[E, H]) extends Heap[E, (H, H)] {
         (pos, heap.insert(e, neg))
   }
 
-  override def insert: (E, (H, H)) => (H, H) = {
-    case (e, (pos, neg)) => (heap.insert(e, pos), neg)
+  override def insert(e: E, h: (H, H)): (H, H) = h match {
+    case (pos, neg) => (heap.insert(e, pos), neg)
   }
 
-  override def deleteMin: ((H, H)) => (H, H) = {
+  override def deleteMin(h: (H, H)): (H, H) = h match {
     case (pos, neg) => normalize(heap.deleteMin(pos), neg)
   }
 
-  override def merge: ((H, H), (H, H)) => (H, H) = {
+  override def merge(a: (H, H), b: (H, H)): (H, H) = (a, b) match {
     case ((p1, n1), (p2, n2)) => (heap.merge(p1, p2), heap.merge(n1, n2))
   }
 
   override def empty: (H, H) = (heap.empty, heap.empty)
 
-  override def isEmpty: ((H, H)) => Boolean = {
+  override def isEmpty(h: (H, H)): Boolean = h match {
     case (pos, _) => heap.isEmpty(pos)
   }
 
-  override def findMin: ((H, H)) => E = {
+  override def findMin(h: (H, H)): E = h match {
     case (pos, _) => heap.findMin(pos)
   }
 }
