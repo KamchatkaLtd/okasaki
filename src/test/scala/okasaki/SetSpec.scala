@@ -7,13 +7,15 @@ import org.specs2.mutable.Specification
 /**
  * Copyright (C) 2015 Kamchatka Ltd
  */
-abstract class SetSpec[E, S, SES <: Set[E, S]](val set: SES) extends Specification with ScalaCheck {
+abstract class SetSpec[E] extends Specification with ScalaCheck {
 
   implicit def elements: Arbitrary[E]
 
+  def set: Set[E]
+
   "An empty set" should {
     "contain no elements" ! prop { a: E =>
-      set.member(a, set.empty) must beFalse
+      set.empty.member(a) must beFalse
     }
   }
 
@@ -21,18 +23,18 @@ abstract class SetSpec[E, S, SES <: Set[E, S]](val set: SES) extends Specificati
     "contain its elements" ! prop { a: Seq[E] =>
       val s = setFrom(a)
 
-      a.forall(set.member(_, s)) should beTrue
+      a.forall(s.member) should beTrue
     }
 
     "not contain extra elements" ! prop { (a: Seq[E], e: E) =>
       val s = setFrom(a)
 
-      set.member(e, s) === a.contains(e)
+      s.member(e) === a.contains(e)
     }
   }
 
   implicit def manyElements: Arbitrary[Seq[E]] =
     Arbitrary(Gen.listOf(elements.arbitrary).filter(_.nonEmpty))
 
-  private def setFrom(es: Seq[E]): S = es.foldRight(set.empty)(set.insert)
+  private def setFrom(es: Seq[E]): Set[E] = es.foldLeft(set.empty)(_ insert _)
 }

@@ -65,7 +65,7 @@ class LeftistHeap[E](implicit val ord: Ordering[E]) extends Heap[E, Repr[E]] {
       else makeT(y, a, insert(x, b))
   }
 
-  override def findMin(h: Repr[E]): E = {
+  override def findMin(h: Repr[E]): E = h match {
     case SubHeap(_, x, _, _) => x
     case Empty => throw new IllegalStateException("called findMin on an empty heap")
   }

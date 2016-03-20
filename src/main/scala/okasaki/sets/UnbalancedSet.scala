@@ -1,7 +1,8 @@
 package okasaki.sets
 
-import okasaki.misc.{SubBinaryTree, BinaryTree}
 import okasaki.Set
+import okasaki.misc.BinaryTree._
+import okasaki.misc.{BinaryTree, SubBinaryTree}
 
 import scala.annotation.implicitNotFound
 
@@ -13,12 +14,11 @@ import scala.annotation.implicitNotFound
  * Copyright (C) 2015 Kamchatka Ltd
  */
 @implicitNotFound("No member of type class Ordering in scope for ${E}")
-class UnbalancedSet[E](implicit ord: Ordering[E]) extends Set[E, BinaryTree[E]] {
-  import BinaryTree._
+class UnbalancedSet[E](s: BinaryTree[E] = Empty)(implicit ord: Ordering[E]) extends Set[E] {
 
-  override def empty: BinaryTree[E] = Empty
+  val empty = new UnbalancedSet[E](Empty)
 
-  override def member(x: E, s: BinaryTree[E]): Boolean = {
+  override def member(x: E): Boolean = {
     // ex. 2.2
     def member1(last: Option[E], ss: BinaryTree[E]): Boolean = {
       ss match {
@@ -33,7 +33,7 @@ class UnbalancedSet[E](implicit ord: Ordering[E]) extends Set[E, BinaryTree[E]] 
     member1(None, s)
   }
 
-  override def insert(x: E, s: BinaryTree[E]): BinaryTree[E] = {
+  override def insert(x: E) = {
     // ex. 2.3
     def insertTo(s: BinaryTree[E]): Option[BinaryTree[E]] = {
       s match {
@@ -45,6 +45,6 @@ class UnbalancedSet[E](implicit ord: Ordering[E]) extends Set[E, BinaryTree[E]] 
       }
     }
 
-    insertTo(s).getOrElse(s)
+    insertTo(s).map(new UnbalancedSet(_)).getOrElse(this)
   }
 }

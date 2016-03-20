@@ -18,7 +18,7 @@ class LazyBinomialHeap[E](implicit val ord: Ordering[E]) extends Heap[E, LazyBin
 
   override def empty: BHeap[E] = Susp(Nil)
 
-  override def isEmpty(h: BHeap[E]): Boolean = {
+  override def isEmpty(h: BHeap[E]): Boolean = h match {
     case Susp(Nil) => true
     case _ => false
   }

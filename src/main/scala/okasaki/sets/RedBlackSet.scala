@@ -33,7 +33,7 @@ object RedBlackSet {
   }
 
   // ex. 3.9
-  def fromOrdList[E](l: List[E]): RBTree[E] = {
+  def fromOrdList[E](l: List[E])(implicit ord: Ordering[E]): RedBlackSet[E] = {
     def build(l: List[E], rb: Int): RBTree[E] = (l, rb) match {
       case (Nil, 0) => Empty
       case (Nil, _) => throw new IllegalStateException(s"Red budget of $rb allocated for an empty list")
@@ -51,17 +51,17 @@ object RedBlackSet {
     }
 
     val redBudget = l.size - nearestFullTreeSmallerThan(l.size)
-    build(l, redBudget)
+    new RedBlackSet(build(l, redBudget))
   }
 
   def nearestFullTreeSmallerThan(n: Int): Int = (1 << log2(n + 1)) - 1
 }
 
-class RedBlackSet[E](implicit ord: Ordering[E]) extends Set[E, RBTree[E]] {
+class RedBlackSet[E](s: RBTree[E] = Empty)(implicit ord: Ordering[E]) extends Set[E] {
 
-  override def empty: RBTree[E] = Empty
+  override def empty = new RedBlackSet[E]()
 
-  override def member(x: E, s: RBTree[E]): Boolean = {
+  override def member(x: E): Boolean = {
     def member1(last: Option[E], ss: RBTree[E]): Boolean = {
       ss match {
         case Empty =>
@@ -81,6 +81,8 @@ class RedBlackSet[E](implicit ord: Ordering[E]) extends Set[E, RBTree[E]] {
     case SubTree(B, a, _, b) => 1 + max(blackHeight(a), blackHeight(b))
   }
 
+  def isValid: Boolean = isValid(s)
+
   def isValid(s: RBTree[_]): Boolean = s match {
     case Empty => true
     case SubTree(_, a, _, b) => blackHeight(a) == blackHeight(b) && isValid(a) && isValid(b)
@@ -98,7 +100,7 @@ class RedBlackSet[E](implicit ord: Ordering[E]) extends Set[E, RBTree[E]] {
     case _ => SubTree(clr, l, e, r)
   }
 
-  override def insert(x: E, s: RBTree[E]): RBTree[E] = {
+  override def insert(x: E) = {
     def ins(ss: RBTree[E]): SubTree[E] = ss match {
       case Empty => SubTree(R, Empty, x, Empty)
       case sss@SubTree(color, a, y, b) =>
@@ -107,6 +109,6 @@ class RedBlackSet[E](implicit ord: Ordering[E]) extends Set[E, RBTree[E]] {
         else sss
     }
 
-    ins(s).copy(c = B)
+    new RedBlackSet(ins(s).copy(c = B))
   }
 }

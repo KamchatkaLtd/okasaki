@@ -21,12 +21,12 @@ class SizedHeap[E, H](heap: Heap[E, H]) extends Heap[E, (Int, H)] {
 
   override def empty: (Int, H) = (0, heap.empty)
 
-  override def isEmpty(sh: (Int, H)): Boolean = {
+  override def isEmpty(sh: (Int, H)): Boolean = sh match {
     case (0, _) => true
     case _ => false
   }
 
-  override def findMin(sh: (Int, H)): E = {
+  override def findMin(sh: (Int, H)): E = sh match {
     case (0, _) => throw new IllegalStateException("called findMin on an empty heap")
     case (_, h) => heap.findMin(h)
   }

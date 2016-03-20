@@ -3,10 +3,10 @@ package okasaki
 /**
  * Copyright (C) 2015 Kamchatka Ltd
  */
-trait Set[E, S] {
-  def empty: S
+trait Set[E] {
+  def empty: Set[E]
 
-  def insert(e: E, s: S): S
+  def insert(e: E): Set[E]
 
-  def member(e: E, s: S): Boolean
+  def member(e: E): Boolean
 }
