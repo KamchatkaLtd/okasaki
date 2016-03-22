@@ -9,18 +9,18 @@ import org.scalacheck.Gen._
  * Copyright (C) 2015 Kamchatka Ltd
  */
 class HeapWithDeletionSpec
-  extends HeapSpec(new HeapWithDeletion(new SkewBinomialHeap[Int]))
+  extends HeapSpec[Int, HeapWithDeletion[Int, SkewBinomialHeap[Int]]]
   with IntElements {
+
+  def empty = new HeapWithDeletion(new SkewBinomialHeap[Int]())
 
   "Heap with deletion" should {
     "support deletion" in {
-      val heap = new HeapWithDeletion(new SkewBinomialHeap[Int])
-
       "single element" ! prop { lwe: ListWithElement =>
         val ListWithElement(l, x) = lwe
-        val h = l.foldRight(heap.empty)(heap.insert)
+        val h = fromList(l)
 
-        drain(heap.delete(x, h)) === deleteFirst(x, l.sorted)
+        h.delete(x).toList === deleteFirst(x, l.sorted)
       }
     }
   }

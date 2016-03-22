@@ -14,9 +14,10 @@ import scala.annotation.implicitNotFound
  * Copyright (C) 2015 Kamchatka Ltd
  */
 @implicitNotFound("No member of type class Ordering in scope for ${E}")
-class UnbalancedSet[E](s: BinaryTree[E] = Empty)(implicit ord: Ordering[E]) extends Set[E] {
+class UnbalancedSet[E](s: BinaryTree[E] = Empty)
+                      (implicit ord: Ordering[E]) extends Set[E] {
 
-  val empty = new UnbalancedSet[E](Empty)
+  override def empty = new UnbalancedSet[E]
 
   override def member(x: E): Boolean = {
     // ex. 2.2

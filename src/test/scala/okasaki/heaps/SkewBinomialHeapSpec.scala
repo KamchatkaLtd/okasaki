@@ -6,5 +6,8 @@ import okasaki.{HeapSpec, IntElements}
  * Copyright (C) 2015 Kamchatka Ltd
  */
 class SkewBinomialHeapSpec
-  extends HeapSpec(new SkewBinomialHeap[Int])
-  with IntElements
+  extends HeapSpec[Int, SkewBinomialHeap[Int]]
+  with IntElements {
+
+  def empty = new SkewBinomialHeap[Int]
+}

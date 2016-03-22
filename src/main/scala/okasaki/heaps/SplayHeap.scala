@@ -1,6 +1,7 @@
 package okasaki.heaps
 
 import okasaki.Heap
+import okasaki.heaps.SplayHeap.{Empty, SHeap}
 
 /**
  * Copyright (C) 2015-2016 Kamchatka Ltd
@@ -18,24 +19,22 @@ object SplayHeap {
   }
 
   def sort[E](list: List[E])(implicit ord: Ordering[E]): List[E] = {
-    def inOrder(sHeap: SHeap[E], res: List[E]): List[E] = sHeap match {
-      case Empty => res
-      case Tree(a, x, b) => inOrder(a, x :: inOrder(b, res))
-    }
-    val heap = new SplayHeap[E]()
-    val h = list.foldRight(heap.empty)(heap.insert)
-    inOrder(h, Nil)
+    val heap = new SplayHeap[E](Empty)
+    val h = list.foldLeft(heap)(_ insert _)
+    h.toList
   }
 
 }
 
-class SplayHeap[E](implicit val ord: Ordering[E]) extends Heap[E, SplayHeap.SHeap[E]] {
+class SplayHeap[E](val h: SHeap[E] = Empty)
+                  (implicit val ord: Ordering[E])
+  extends Heap[E, SplayHeap[E]] {
 
   import okasaki.heaps.SplayHeap._
 
-  override def empty: SHeap[E] = Empty
+  override def empty = new SplayHeap[E]
 
-  override def isEmpty(h: SHeap[E]): Boolean = h == Empty
+  override def isEmpty = h == Empty
 
   def partition(pivot: E, h: SHeap[E]): (SHeap[E], SHeap[E]) = h match {
     case Empty => (Empty, Empty)
@@ -64,28 +63,41 @@ class SplayHeap[E](implicit val ord: Ordering[E]) extends Heap[E, SplayHeap.SHea
 
   }
 
-  override def insert(x: E, t: SHeap[E]): SHeap[E] = {
-    val (a, b) = partition(x, t)
-    Tree(a, x, b)
+  override def insert(x: E) = {
+    val (a, b) = partition(x, h)
+    new SplayHeap[E](Tree(a, x, b))
   }
 
-  override def merge(h1: SHeap[E], h2: SHeap[E]): SHeap[E] = (h1, h2) match {
+  override def merge(o: SplayHeap[E]) = new SplayHeap[E](merge(h, o.h))
+
+  private def merge(h1: SHeap[E], h2: SHeap[E]): SHeap[E] = (h1, h2) match {
     case (Empty, t) => t
     case (Tree(a, x, b), t) =>
       val (a1, b1) = partition(x, t)
       Tree(merge(a, a1), x, merge(b, b1))
   }
 
-  override def findMin(h: SHeap[E]): E = h match {
+  override def findMin = findMin(h)
+
+  private def findMin(h: SHeap[E]): E = h match {
     case Empty => throw new IllegalStateException("called findMin on an empty heap")
     case Tree(Empty, x, _) => x
     case Tree(a, _, _) => findMin(a)
   }
 
-  override def deleteMin(h: SHeap[E]): SHeap[E] = h match {
+  override def deleteMin = new SplayHeap[E](deleteMin(h))
+
+  private def deleteMin(h: SHeap[E]): SHeap[E] = h match {
     case Empty => throw new IllegalStateException("called deleteMin on an empty heap")
     case Tree(Empty, _, b) => b
     case Tree(Tree(Empty, _, b), y, c) => Tree(b, y, c)
     case Tree(Tree(a, x, b), y, c) => Tree(deleteMin(a), x, Tree(b, y, c))
   }
+
+  private def inOrder(sHeap: SHeap[E], res: List[E]): List[E] = sHeap match {
+    case Empty => res
+    case Tree(a, x, b) => inOrder(a, x :: inOrder(b, res))
+  }
+
+  override def toList: List[E] = inOrder(h, Nil)
 }

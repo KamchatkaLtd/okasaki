@@ -19,15 +19,8 @@ object WeightBiasedLeftistHeap {
 
   sealed trait Repr[+E]
 
-}
-
-class WeightBiasedLeftistHeap[E](implicit val ord: Ordering[E]) extends Heap[E, Repr[E]] {
-
-  override val empty: Repr[E] = Empty
-
-  override def isEmpty(h: Repr[E]): Boolean = h == Empty
-
-  override def merge(a: Repr[E], b: Repr[E]): Repr[E] = (a, b) match {
+  private def merge[E](a: Repr[E], b: Repr[E])
+                      (implicit ord: Ordering[E]): Repr[E] = (a, b) match {
     case (h, Empty) => h
     case (Empty, h) => h
     case (h1@SubHeap(w1, x, a1, b1), h2@SubHeap(w2, y, a2, b2)) =>
@@ -36,20 +29,38 @@ class WeightBiasedLeftistHeap[E](implicit val ord: Ordering[E]) extends Heap[E, 
       else SubHeap(w, y, a2, merge(h1, b2))
   }
 
-  override def insert(x: E, h: Repr[E]): Repr[E] = h match {
+  private def insert[E](x: E, h: Repr[E])
+                       (implicit ord: Ordering[E]): Repr[E] = h match {
     case Empty => SubHeap(1, x, Empty, Empty)
     case SubHeap(w, y, a, b) =>
       if (ord.lteq(x, y)) SubHeap(w + 1, x, a, insert(y, b))
       else SubHeap(w + 1, y, a, insert(x, b))
   }
 
-  override def findMin(h: Repr[E]): E = h match {
+
+}
+
+class WeightBiasedLeftistHeap[E](val h: Repr[E] = Empty)
+                                (implicit val ord: Ordering[E])
+  extends Heap[E, WeightBiasedLeftistHeap[E]] {
+
+  override def empty = new WeightBiasedLeftistHeap[E]
+
+  override def isEmpty = h == Empty
+
+  override def merge(o: WeightBiasedLeftistHeap[E]) =
+    new WeightBiasedLeftistHeap[E](WeightBiasedLeftistHeap.merge(h, o.h))
+
+  override def insert(x: E) =
+    new WeightBiasedLeftistHeap[E](WeightBiasedLeftistHeap.insert(x, h))
+
+  override def findMin = h match {
     case SubHeap(_, x, _, _) => x
     case Empty => throw new IllegalStateException("called findMin on an empty heap")
   }
 
-  override def deleteMin(h: Repr[E]): Repr[E] = h match {
-    case SubHeap(_, _, a, b) => merge(a, b)
+  override def deleteMin = h match {
+    case SubHeap(_, _, a, b) => new WeightBiasedLeftistHeap[E](WeightBiasedLeftistHeap.merge(a, b))
     case Empty => throw new IllegalStateException("called deleteMin on an empty heap")
   }
 }

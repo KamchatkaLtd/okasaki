@@ -13,11 +13,11 @@ object BinomialHeap {
   type BHeap[E] = List[(Int, Node[E])]
 }
 
-class BinomialHeap[E](implicit val ord: Ordering[E]) extends Heap[E, BinomialHeap.BHeap[E]] {
+class BinomialHeap[E](val h: BHeap[E] = Nil)(implicit val ord: Ordering[E]) extends Heap[E, BinomialHeap[E]] {
 
-  override def empty: BHeap[E] = Nil
+  override def empty = new BinomialHeap[E]()
 
-  override def isEmpty(h: BHeap[E]): Boolean = h match {
+  override def isEmpty: Boolean = h match {
     case Nil => true
     case _ => false
   }
@@ -37,9 +37,12 @@ class BinomialHeap[E](implicit val ord: Ordering[E]) extends Heap[E, BinomialHea
     case t1 :: ts1 => if (rank(t) < rank(t1)) t :: ts else insTree(link(t, t1), ts1)
   }
 
-  override def insert(x: E, ts: BHeap[E]): BHeap[E] = insTree((0, Node(x, Nil)), ts)
+  override def insert(x: E) = new BinomialHeap[E](insTree((0, Node(x, Nil)), h))
 
-  override def merge(a: BHeap[E], b: BHeap[E]): BHeap[E] = (a, b) match {
+  def merge(o: BinomialHeap[E]): BinomialHeap[E] =
+    new BinomialHeap[E](merge(h, o.h))
+
+  def merge(a: BHeap[E], b: BHeap[E]): BHeap[E] = (a, b) match {
     case (ts1, Nil) => ts1
     case (Nil, ts2) => ts2
     case (ts1@(t1 :: ts11), ts2@(t2 :: ts22)) =>
@@ -48,15 +51,17 @@ class BinomialHeap[E](implicit val ord: Ordering[E]) extends Heap[E, BinomialHea
       else insTree(link(t1, t2), merge(ts11, ts22))
   }
 
-  override def findMin(h: BHeap[E]): E = h match {
+  override def findMin: E = findMin(h)
+
+  def findMin(h: BHeap[E]): E = h match {
     case Nil => throw new IllegalStateException("called findMin on an empty heap")
     case t :: Nil => root(t)
     case t :: ts => ord.min(root(t), findMin(ts))
   }
 
-  override def deleteMin(h: BHeap[E]): BHeap[E] = {
+  override def deleteMin = {
     val ((r, Node(x, ts1)), ts2) = removeMinTree(h)
-    merge(ts1.map(withRank(r - 1)).reverse, ts2)
+    new BinomialHeap[E](merge(ts1.map(withRank(r - 1)).reverse, ts2))
   }
 
   def withRank(r: Int)(x: Node[E]): (Int, Node[E]) = (r, x)

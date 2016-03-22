@@ -3,50 +3,43 @@ package okasaki
 /**
  * Copyright (C) 2015-2016 Kamchatka Ltd
  */
-class HeapWithDeletion[E, H](heap: Heap[E, H]) extends Heap[E, (H, H)] {
-  override implicit def ord: Ordering[E] = heap.ord
+class HeapWithDeletion[E, H <: Heap[E, H]](val pos: H, val neg: H) extends Heap[E, HeapWithDeletion[E, H]] {
+  override implicit def ord: Ordering[E] = pos.ord
 
-  private def normalize(pos: H, neg: H): (H, H) =
-    if (heap.isEmpty(pos)) empty
-    else if (heap.isEmpty(neg)) (pos, heap.empty)
+  def this(h: H) = this(h, h.empty)
+
+  private def create(pos: H, neg: H): HeapWithDeletion[E, H] = new HeapWithDeletion[E, H](pos, neg)
+
+  private def normalize(pos: H, neg: H): HeapWithDeletion[E, H] =
+    if (pos.isEmpty) empty
+    else if (neg.isEmpty) create(pos, pos.empty)
     else {
-      val minPos = heap.findMin(pos)
-      val minNeg = heap.findMin(neg)
-      if (ord.lt(minPos, minNeg)) (pos, neg)
-      else if (ord.equiv(minPos, minNeg)) normalize(heap.deleteMin(pos), heap.deleteMin(neg))
-      else normalize(pos, heap.deleteMin(neg))
+      val minPos = pos.findMin
+      val minNeg = neg.findMin
+      if (ord.lt(minPos, minNeg)) create(pos, neg)
+      else if (ord.equiv(minPos, minNeg)) normalize(pos.deleteMin, neg.deleteMin)
+      else normalize(pos, neg.deleteMin)
     }
 
-  def delete(e: E, h: (H, H)) = h match {
-    case (pos, neg) =>
-      val min = heap.findMin(pos)
-      if (ord.lt(e, min))
-        h
-      else if (ord.equiv(e, min))
-        normalize(heap.deleteMin(pos), neg)
-      else
-        (pos, heap.insert(e, neg))
+  def delete(e: E): HeapWithDeletion[E, H] = {
+    val min = pos.findMin
+    if (ord.lt(e, min))
+      this
+    else if (ord.equiv(e, min))
+      normalize(pos.deleteMin, neg)
+    else
+      new HeapWithDeletion[E, H](pos, neg.insert(e))
   }
 
-  override def insert(e: E, h: (H, H)): (H, H) = h match {
-    case (pos, neg) => (heap.insert(e, pos), neg)
-  }
+  override def insert(e: E) = create(pos.insert(e), neg)
 
-  override def deleteMin(h: (H, H)): (H, H) = h match {
-    case (pos, neg) => normalize(heap.deleteMin(pos), neg)
-  }
+  override def deleteMin = normalize(pos.deleteMin, neg)
 
-  override def merge(a: (H, H), b: (H, H)): (H, H) = (a, b) match {
-    case ((p1, n1), (p2, n2)) => (heap.merge(p1, p2), heap.merge(n1, n2))
-  }
+  override def merge(o: HeapWithDeletion[E, H]) = create(pos.merge(o.pos), neg.merge(o.neg))
 
-  override def empty: (H, H) = (heap.empty, heap.empty)
+  override def empty = create(pos.empty, pos.empty)
 
-  override def isEmpty(h: (H, H)): Boolean = h match {
-    case (pos, _) => heap.isEmpty(pos)
-  }
+  override def isEmpty: Boolean = pos.isEmpty
 
-  override def findMin(h: (H, H)): E = h match {
-    case (pos, _) => heap.findMin(pos)
-  }
+  override def findMin: E = pos.findMin
 }

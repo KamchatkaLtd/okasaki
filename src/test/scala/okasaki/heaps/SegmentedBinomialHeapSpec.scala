@@ -1,14 +1,15 @@
 package okasaki.heaps
 
-import okasaki.heaps.SegmentedBinomialHeap.SBHeap
 import okasaki.{HeapSpec, IntElements}
 
 /**
  * Copyright (C) 2015 Kamchatka Ltd
  */
 class SegmentedBinomialHeapSpec
-  extends HeapSpec[Int, SBHeap[Int]](new SegmentedBinomialHeap[Int])
+  extends HeapSpec[Int, SegmentedBinomialHeap[Int]]
   with IntElements {
+
+  def empty = new SegmentedBinomialHeap[Int]
 
   "bug 1: sorting" should {
     "work" in {
@@ -16,11 +17,11 @@ class SegmentedBinomialHeapSpec
       val hh = fromList(a)
 
       println(hh)
-      println(heap.deleteMin(hh))
-      println(heap.deleteMin(heap.deleteMin(hh)))
-      println(heap.deleteMin(heap.deleteMin(heap.deleteMin(hh))))
+      println(hh.deleteMin)
+      println(hh.deleteMin.deleteMin)
+      println(hh.deleteMin.deleteMin.deleteMin)
 
-      drain(hh) === a.sorted
+      hh.toList === a.sorted
     }
   }
 
@@ -28,7 +29,7 @@ class SegmentedBinomialHeapSpec
     "work" in {
       val a = List(1, 2, 0)
       val hh = fromList(a)
-      drain(hh) === a.sorted
+      hh.toList === a.sorted
     }
   }
 

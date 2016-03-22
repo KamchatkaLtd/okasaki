@@ -1,6 +1,7 @@
 package okasaki.heaps
 
 import okasaki.Heap
+import okasaki.heaps.SegmentedBinomialHeap.SBHeap
 
 import scala.collection.immutable.::
 
@@ -22,50 +23,32 @@ object SegmentedBinomialHeap {
 
 
   type SBHeap[E] = List[Digit[E]]
+
 }
 
 
-class SegmentedBinomialHeap[E](implicit val ord: Ordering[E]) extends Heap[E, SegmentedBinomialHeap.SBHeap[E]] {
+class SegmentedBinomialHeap[E](val h: SBHeap[E] = Nil)
+                              (implicit val ord: Ordering[E]) extends Heap[E, SegmentedBinomialHeap[E]] {
 
   import okasaki.heaps.SegmentedBinomialHeap._
 
-  override def empty: SBHeap[E] = Nil
+  override def empty = new SegmentedBinomialHeap[E]
 
-  override def isEmpty(h: SBHeap[E]): Boolean = h.isEmpty
+  override def isEmpty = h.isEmpty
 
-  def root(t: Node[E]): E = t.e
+  override def insert(x: E) = new SegmentedBinomialHeap[E](insTree(Node(x, Nil), h))
 
-  def link(t1: Node[E], t2: Node[E]): Node[E] = (t1, t2) match {
-    case (Node(x1, c1), Node(x2, c2)) =>
-      if (ord.lteq(x1, x2)) Node(x1, t2 :: c1)
-      else Node(x2, t1 :: c2)
-  }
+  override def merge(o: SegmentedBinomialHeap[E]) = new SegmentedBinomialHeap[E](merge(h, o.h))
 
-  def ones(maybeNode: List[Node[E]], digits: List[Digit[E]]): List[Digit[E]] = (maybeNode, digits) match {
-    case (Nil, ds) => ds
-    case (ns1, Ones(ns2) :: ds) => Ones(ns1 ++ ns2) :: ds // assert ns1.size <= 1
-    case (ns, ds) => Ones(ns) :: ds
-  }
+  // _.filterNot(_ == Zero).map(min).reduce(ord.min)
+  override def findMin: E = findMin(h)
 
-  def simpleIns(t: Node[E], ts: SBHeap[E]): SBHeap[E] = ts match {
-    case Nil => ones(t :: Nil, Nil)
-    case Zero :: ts1 => ones(t :: Nil, ts1)
-    case Ones(d :: ds) :: ts1 => Two(t, d) :: ones(ds, ts1)
-  }
+  override def deleteMin = new SegmentedBinomialHeap[E](removeMinTree(h) match {
+    case (Node(_, Nil), ts2) => ts2
+    case (Node(_, ts1), ts2) => merge(fixup(ones(ts1.reverse, Nil)), ts2)
+  })
 
-  def fixup(h: SBHeap[E]): SBHeap[E] = h match {
-    case Two(a, b) :: ds =>
-      Zero :: simpleIns(link(a, b), ds)
-    case Ones(ts) :: Two(a, b) :: ds =>
-      Ones(ts) :: Zero :: simpleIns(link(a, b), ds)
-    case ds => ds
-  }
-
-  def insTree(t: Node[E], ts: SBHeap[E]): SBHeap[E] = fixup(simpleIns(t, ts))
-
-  override def insert(x: E, ts: SBHeap[E]): SBHeap[E] = insTree(Node(x, Nil), ts)
-
-  override def merge(a: SBHeap[E], b: SBHeap[E]): SBHeap[E] = (a, b) match {
+  private def merge(a: SBHeap[E], b: SBHeap[E]): SBHeap[E] = (a, b) match {
     case (ds1, Nil) => ds1
     case (Nil, ds2) => ds2
     case (Zero :: ds1, Zero :: ds2) =>
@@ -88,26 +71,60 @@ class SegmentedBinomialHeap[E](implicit val ord: Ordering[E]) extends Heap[E, Se
       Zero :: insTree(link(a2, b2), insTree(link(a1, b1), fixup(merge(ds1, ds2))))
   }
 
-  def min(d: Digit[E]): E = d match {
+  private def root(t: Node[E]): E = t.e
+
+  private def link(t1: Node[E], t2: Node[E]): Node[E] = (t1, t2) match {
+    case (Node(x1, c1), Node(x2, c2)) =>
+      if (ord.lteq(x1, x2)) Node(x1, t2 :: c1)
+      else Node(x2, t1 :: c2)
+  }
+
+  private def ones(maybeNode: List[Node[E]], digits: List[Digit[E]]): List[Digit[E]] =
+    (maybeNode, digits) match {
+      case (Nil, ds) =>
+        ds
+      case (ns1: List[Node[E]], Ones(ns2: List[Node[E]]) :: ds) =>
+        val ones1: List[Node[E]] = ns1 ++ ns2
+        Ones(ones1) :: ds // assert ns1.size <= 1
+      case (ns, ds) =>
+        Ones(ns) :: ds
+    }
+
+  private def simpleIns(t: Node[E], ts: SBHeap[E]): SBHeap[E] =
+    ts match {
+      case Nil =>
+        ones(t :: Nil, Nil)
+      case Zero :: ts1 =>
+        ones(t :: Nil, ts1)
+      case Ones(d :: ds) :: ts1 =>
+        Two(t, d) :: ones(ds, ts1)
+    }
+
+  private def fixup(h: SBHeap[E]): SBHeap[E] = h match {
+    case Two(a, b) :: ds =>
+      Zero :: simpleIns(link(a, b), ds)
+    case Ones(ts) :: Two(a, b) :: ds =>
+      Ones(ts) :: Zero :: simpleIns(link(a, b), ds)
+    case ds => ds
+  }
+
+  private def insTree(t: Node[E], ts: SBHeap[E]): SBHeap[E] = fixup(simpleIns(t, ts))
+
+  private def min(d: Digit[E]): E = d match {
     case Ones(t :: Nil) => t.e
     case Ones(t :: ts) => ord.min(t.e, min(Ones(ts)))
     case Two(t1, t2) => ord.min(t1.e, t2.e)
   }
 
-  // _.filterNot(_ == Zero).map(min).reduce(ord.min)
-  override def findMin(h: SBHeap[E]): E = h match {
+  private def findMin(h: SBHeap[E]): E = h match {
     case Nil => throw new IllegalStateException("called findMin on an empty heap")
     case Zero :: ds => findMin(ds)
     case d :: Nil => min(d)
     case d :: ds => ord.min(min(d), findMin(ds))
   }
 
-  override def deleteMin(h: SBHeap[E]): SBHeap[E] = removeMinTree(h) match {
-    case (Node(_, Nil), ts2) => ts2
-    case (Node(_, ts1), ts2) => merge(fixup(ones(ts1.reverse, Nil)), ts2)
-  }
 
-  def decOnes(trees: List[Node[E]], rest: SBHeap[E]): (Node[E], SBHeap[E]) = trees match {
+  private def decOnes(trees: List[Node[E]], rest: SBHeap[E]): (Node[E], SBHeap[E]) = trees match {
     case t :: Nil => (t, rest)
     case t :: ts =>
       decOnes(ts, rest) match {
@@ -133,7 +150,7 @@ class SegmentedBinomialHeap[E](implicit val ord: Ordering[E]) extends Heap[E, Se
       case Nil => throw new IllegalStateException("called removeMinTree on an empty heap")
       case Zero :: ds =>
         val (t, ds1) = removeMinTree(ds)
-        (t, if (isEmpty(ds1)) Nil else Zero :: ds1)
+        (t, if (ds1.isEmpty) Nil else Zero :: ds1)
       case Ones(ts) :: Nil =>
         decOnes(ts, Nil)
       case Ones(ts) :: ds =>

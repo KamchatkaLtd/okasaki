@@ -5,18 +5,21 @@ package okasaki
  *
  * Copyright (C) 2015-2016 Kamchatka Ltd
  */
-trait Heap[E, H] {
+trait Heap[E, H <: Heap[E, H]] {
   implicit def ord: Ordering[E]
 
   def empty: H
 
-  def isEmpty(h: H): Boolean
+  def isEmpty: Boolean
 
-  def insert(x: E, h: H): H
+  def insert(x: E): H
 
-  def merge(a: H, b: H): H
+  def merge(b: H): H
 
-  def findMin(h: H): E
+  def findMin: E
 
-  def deleteMin(h: H): H
+  def deleteMin: H
+
+  def toList: List[E] =
+    if (isEmpty) Nil else findMin :: deleteMin.toList
 }

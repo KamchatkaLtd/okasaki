@@ -7,52 +7,56 @@ import org.specs2.mutable.Specification
 /**
  * Copyright (C) 2015 Kamchatka Ltd
  */
-abstract class HeapSpec[E, H](var heap: Heap[E, H]) extends Specification with ScalaCheck {
+abstract class HeapSpec[E, H <: Heap[E, H]] extends Specification with ScalaCheck {
 
   implicit def elements: Arbitrary[E]
 
   implicit def heaps: Arbitrary[H] = Arbitrary(Gen.nonEmptyListOf(elements.arbitrary).map(fromList))
 
+  def empty: H
+
+  lazy val ord: Ordering[E] = empty.ord
+
   "heap" should {
     "provide an empty heap" in {
-      heap.isEmpty(heap.empty)
+      empty.isEmpty
     }
   }
 
   "empty heap" should {
     "allow insertion" ! prop {
       e: E =>
-        val h = heap.empty
-        heap.findMin(heap.insert(e, h)) === e
+        val h = empty
+        h.insert(e).findMin === e
     }
 
     "be empty for find" ! prop {
       e: E =>
-        val h = heap.empty
-        heap.findMin(h) should throwAn[IllegalStateException]
+        val h = empty
+        h.findMin should throwAn[IllegalStateException]
     }
 
     "be empty for delete" ! prop {
       e: E =>
-        val h = heap.empty
-        heap.deleteMin(h) should throwAn[IllegalStateException]
+        val h = empty
+        h.deleteMin should throwAn[IllegalStateException]
     }
   }
 
   "any heap" should {
     "allow insertion" ! prop {
       (a: E, h: H) =>
-        val hwitha = heap.insert(a, h)
-        heap.ord.lteq(heap.findMin(hwitha), a) should beTrue
+        val hwitha = h.insert(a)
+        ord.lteq(hwitha.findMin, a) should beTrue
     }
   }
 
   "merge" should {
     "preserve min" ! prop {
       (h1: H, h2: H) =>
-        val h = heap.merge(h1, h2)
-        heap.ord.lteq(heap.findMin(h), heap.findMin(h1)) should beTrue
-        heap.ord.lteq(heap.findMin(h), heap.findMin(h2)) should beTrue
+        val h = h1.merge(h2)
+        ord.lteq(h.findMin, h2.findMin) should beTrue
+        ord.lteq(h.findMin, h1.findMin) should beTrue
     }
   }
 
@@ -60,14 +64,10 @@ abstract class HeapSpec[E, H](var heap: Heap[E, H]) extends Specification with S
     "be natural" ! prop {
       a: List[E] =>
         val hh = fromList(a)
-        drain(hh) === a.sorted(heap.ord)
+        hh.toList === a.sorted(ord)
     }
   }
 
   def fromList(a: List[E]): H =
-    a.foldRight(heap.empty)(heap.insert)
-
-  def drain(h: H): List[E] =
-    if (heap.isEmpty(h)) Nil
-    else heap.findMin(h) :: drain(heap.deleteMin(h))
+    a.foldLeft(empty)(_ insert _)
 }

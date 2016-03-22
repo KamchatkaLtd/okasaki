@@ -1,6 +1,7 @@
 package okasaki.heaps
 
 import okasaki.Heap
+import okasaki.heaps.PairingHeap.{Empty, PHeap}
 
 object PairingHeap {
 
@@ -16,37 +17,41 @@ object PairingHeap {
 
 }
 
-class PairingHeap[E](implicit val ord: Ordering[E]) extends Heap[E, PairingHeap.PHeap[E]] {
+class PairingHeap[E](val h: PHeap[E] = Empty)
+                    (implicit val ord: Ordering[E])
+  extends Heap[E, PairingHeap[E]] {
 
   import okasaki.heaps.PairingHeap._
 
-  override def empty: PHeap[E] = Empty
+  override def empty = new PairingHeap[E](Empty)
 
-  override def isEmpty(h: PHeap[E]): Boolean = h == Empty
+  override def isEmpty: Boolean = h == Empty
 
-  override def merge(a: PHeap[E], b: PHeap[E]): PHeap[E] = (a, b) match {
-    case (Empty, h) => h
-    case (h, Empty) => h
+  override def merge(o: PairingHeap[E]): PairingHeap[E] = new PairingHeap[E](merge(h, o.h))
+
+  private def merge(a: PHeap[E], b: PHeap[E]): PHeap[E] = (a, b) match {
+    case (Empty, _) => b
+    case (_, Empty) => a
     case (h1@Tree(x, hs1), h2@Tree(y, hs2)) =>
       if (ord.lteq(x, y)) Tree(x, h2 :: hs1)
       else Tree(y, h1 :: hs2)
   }
 
-  override def insert(x: E, t: PHeap[E]): PHeap[E] = merge(Tree(x, Nil), t)
+  override def insert(x: E) = new PairingHeap[E](merge(Tree(x, Nil), h))
 
   def mergePairs(hs: List[PHeap[E]]): PHeap[E] = hs match {
     case Nil => Empty
-    case h :: Nil => h
+    case hh :: Nil => hh
     case h1 :: h2 :: rest => merge(merge(h1, h2), mergePairs(rest))
   }
 
-  override def findMin(h: PHeap[E]): E = h match {
+  override def findMin: E = h match {
     case Empty => throw new IllegalStateException("called findMin on an empty heap")
     case Tree(x, _) => x
   }
 
-  override def deleteMin(h: PHeap[E]): PHeap[E] = h match {
+  override def deleteMin = h match {
     case Empty => throw new IllegalStateException("called deleteMin on an empty heap")
-    case Tree(_, hs) => mergePairs(hs)
+    case Tree(_, hs) => new PairingHeap[E](mergePairs(hs))
   }
 }

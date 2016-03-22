@@ -1,6 +1,7 @@
 package okasaki.heaps
 
 import okasaki.Heap
+import okasaki.heaps.ScheduledBinomialHeap.Repr
 
 import scala.collection.immutable.Stream.Empty
 
@@ -22,13 +23,15 @@ object ScheduledBinomialHeap {
   type Repr[E] = (Stream[Digit[E]], Schedule[E])
 }
 
-class ScheduledBinomialHeap[E](implicit val ord: Ordering[E]) extends Heap[E, ScheduledBinomialHeap.Repr[E]] {
+class ScheduledBinomialHeap[E](val h: Repr[E] = (Empty, Nil))
+                              (implicit val ord: Ordering[E])
+  extends Heap[E, ScheduledBinomialHeap[E]] {
 
   import okasaki.heaps.ScheduledBinomialHeap._
 
-  override def empty: Repr[E] = (Empty, Nil)
+  override def empty = new ScheduledBinomialHeap[E]()
 
-  override def isEmpty(h: Repr[E]): Boolean = h match {
+  override def isEmpty: Boolean = h match {
     case (Empty, _) => true
     case _ => false
   }
@@ -66,16 +69,16 @@ class ScheduledBinomialHeap[E](implicit val ord: Ordering[E]) extends Heap[E, Sc
     case _ :: sched => sched
   }
 
-  override def insert(x: E, h: Repr[E]): Repr[E] = {
+  override def insert(x: E) = {
     val (ds, sched) = h
     val ds1 = insTree(Node(x, Nil), ds)
-    (ds1, exec(exec(ds1 :: sched)))
+    new ScheduledBinomialHeap[E]((ds1, exec(exec(ds1 :: sched))))
   }
 
-  override def merge(a: Repr[E], b: Repr[E]): Repr[E] = {
-    val ((ds1, _), (ds2, _)) = (a, b)
+  override def merge(o: ScheduledBinomialHeap[E]) = {
+    val ((ds1, _), (ds2, _)) = (h, o.h)
     val ds = mrg(ds1, ds2)
-    (ds.force, Nil)
+    new ScheduledBinomialHeap[E]((ds.force, Nil))
   }
 
   def removeMinTree(ds: Stream[Digit[E]]): (Node[E], Stream[Digit[E]]) = ds match {
@@ -92,16 +95,16 @@ class ScheduledBinomialHeap[E](implicit val ord: Ordering[E]) extends Heap[E, Sc
       }
   }
 
-  override def findMin(h: Repr[E]): E = {
+  override def findMin = {
     val (ds, _) = h
     val (Node(x, _), _) = removeMinTree(ds)
     x
   }
 
-  override def deleteMin(h: Repr[E]): Repr[E] = {
+  override def deleteMin = {
     val (ds, _) = h
     val (Node(_, c), ds1) = removeMinTree(ds)
     val ds11 = mrgWithList(c.reverse, ds1)
-    (ds11.force, Nil)
+    new ScheduledBinomialHeap[E]((ds11.force, Nil))
   }
 }
