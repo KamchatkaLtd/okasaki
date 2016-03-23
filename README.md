@@ -32,7 +32,7 @@ We'll track progress against an expanded version of Haskell code ToC (App. A):
  - [x] Redundant Zeroless Binary
  - [x] Skew Binary
  - [x] Binary (alternative)
-- [ ] Heaps
+- [x] Heaps
  - [x] Leftist
  - [x] Weight-Biased Leftist
  - [x] Binomial
@@ -42,7 +42,7 @@ We'll track progress against an expanded version of Haskell code ToC (App. A):
  - [x] Scheduled Binomial
  - [x] Segmented Binomial
  - [x] Skew Binomial
- - [ ] Bootstrapped
+ - [x] Bootstrapped
 - [x] Sortable Collections
  - [x] Bottom-up Mergesort
 - [x] Sets
