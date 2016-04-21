@@ -1,7 +1,9 @@
 package okasaki.maps
 
-import okasaki.misc.{SubBinaryTree, BinaryTree}
 import okasaki.FiniteMap
+import okasaki.FiniteMap.NotFound
+import okasaki.misc.BinaryTree.Empty
+import okasaki.misc.{BinaryTree, SubBinaryTree}
 
 import scala.annotation.implicitNotFound
 
@@ -11,12 +13,16 @@ import scala.annotation.implicitNotFound
  * Copyright (C) 2015 Kamchatka Ltd
  */
 @implicitNotFound("No member of type class Ordering in scope for ${K}, ${V}")
-class UnbalancedMap[K, V](implicit ord: Ordering[K]) extends FiniteMap[K, V, BinaryTree[(K, V)]] {
-  import BinaryTree._
+class UnbalancedMap[K, V](m: BinaryTree[(K, V)] = Empty)
+                         (implicit ord: Ordering[K])
 
-  override def empty: BinaryTree[(K, V)] = Empty
+  extends FiniteMap[K, V] {
 
-  override def lookup(k: K, m: BinaryTree[(K, V)]): V = {
+  import okasaki.misc.BinaryTree._
+
+  override def empty = new UnbalancedMap[K, V]()
+
+  override def lookup(k: K): V = {
     def lookup1(kk: K, last: Option[(K, V)], mm: BinaryTree[(K, V)]): V = {
       mm match {
         case Empty =>
@@ -24,14 +30,15 @@ class UnbalancedMap[K, V](implicit ord: Ordering[K]) extends FiniteMap[K, V, Bin
             .map(_._2).getOrElse(throw new NotFound())
         case SubBinaryTree(a, y, b) =>
           if (ord.lt(kk, y._1)) lookup1(kk, last, a)
-          else lookup1(kk, Some(y), b)
+          else if (ord.gt(kk, y._1)) lookup1(kk, Some(y), b)
+          else y._2
       }
     }
 
     lookup1(k, None, m)
   }
 
-  override def bind(k: K, v: V, s: BinaryTree[(K, V)]): BinaryTree[(K, V)] = {
+  override def bind(k: K, v: V) = {
     def bindIn(s: BinaryTree[(K, V)]): Option[BinaryTree[(K, V)]] = {
       s match {
         case Empty => Some(SubBinaryTree(Empty, (k, v), Empty))
@@ -42,6 +49,8 @@ class UnbalancedMap[K, V](implicit ord: Ordering[K]) extends FiniteMap[K, V, Bin
       }
     }
 
-    bindIn(s).getOrElse(s)
+    bindIn(m) map (new UnbalancedMap[K, V](_)) getOrElse this
   }
+
+  override def toString = s"UnbalancedMap($m)"
 }
