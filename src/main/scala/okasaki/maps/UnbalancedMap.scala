@@ -12,7 +12,7 @@ import scala.annotation.implicitNotFound
  *
  * Copyright (C) 2015 Kamchatka Ltd
  */
-@implicitNotFound("No member of type class Ordering in scope for ${K}, ${V}")
+@implicitNotFound("No member of type class Ordering in scope for ${K}")
 class UnbalancedMap[K, V](m: BinaryTree[(K, V)] = Empty)
                          (implicit ord: Ordering[K])
 
