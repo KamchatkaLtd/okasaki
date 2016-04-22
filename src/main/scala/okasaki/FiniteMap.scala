@@ -6,7 +6,7 @@ package okasaki
  * Copyright (C) 2015-2016 Kamchatka Ltd
  */
 object FiniteMap {
-  class NotFound extends RuntimeException
+  class NotFound[T](value: T) extends RuntimeException
 }
 
 trait FiniteMap[K, V] {
@@ -16,7 +16,7 @@ trait FiniteMap[K, V] {
 
   def bind(k: K, v: V): FiniteMap[K, V]
 
-  @throws[NotFound]
+  @throws[NotFound[K]]
   def lookup(k: K): V
 }
 

@@ -19,7 +19,7 @@ abstract class FiniteMapSpec[K, V] extends Specification with ScalaCheck {
 
   "An empty map" should {
     "contain no keys" ! prop { k: K =>
-      map.empty.lookup(k) must throwA[FiniteMap.NotFound]
+      map.empty.lookup(k) must throwA[FiniteMap.NotFound[K]]
     }
   }
 
