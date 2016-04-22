@@ -49,5 +49,5 @@ We'll track progress against an expanded version of Haskell code ToC (App. A):
  - [x] Unbalanced
  - [x] Red-Black
 - [ ] Finite Maps
- - [ ] Trie
+ - [x] Trie
  - [ ] Trie of Trees
