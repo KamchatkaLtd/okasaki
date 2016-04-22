@@ -1,4 +1,4 @@
-Okasaki/Scala
+Okasaki/Scala ![build status](https://travis-ci.org/KamchatkaLtd/okasaki.svg)
 =============
 
 The code here is a Scala implementation of data structures and solutions to exercises from the great book
