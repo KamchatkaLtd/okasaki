@@ -42,10 +42,11 @@ class UnbalancedMap[K, V](m: BinaryTree[(K, V)] = Empty)
     def bindIn(s: BinaryTree[(K, V)]): Option[BinaryTree[(K, V)]] = {
       s match {
         case Empty => Some(SubBinaryTree(Empty, (k, v), Empty))
+        case SubBinaryTree(a, y, b) if y == (k, v) => None
         case SubBinaryTree(a, y, b) =>
           if (ord.lt(k, y._1)) bindIn(a).map(SubBinaryTree(_, y, b))
           else if (ord.lt(y._1, k)) bindIn(b).map(SubBinaryTree(a, y, _))
-          else None
+          else Some(SubBinaryTree(a, (k, v), b))
       }
     }
 
