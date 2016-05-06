@@ -9,14 +9,14 @@ Progress
 
 We'll track progress against an expanded version of Haskell code ToC (App. A):
 
-- [ ] Queues
+- [x] Queues
  - [x] Batched
  - [x] Banker's
  - [x] Physicist's
  - [x] Real-time
  - [x] Hood-Melville
  - [x] Bootstrapped
- - [ ] Implicit
+ - [x] Implicit
 - [x] Deques
  - [x] Batched
  - [x] Banker's
