@@ -8,7 +8,7 @@ object OutputRestrictedDeque {
   case class Repr[E, Q](q: Q, f: List[E])
 
   class ForQueue[E, Q](queue: Queue[E, Q]) extends OutputRestrictedDeque[E, Repr[E, Q]] {
-    override def cons(q: Repr[E, Q], x: E): Repr[E, Q] = q match {
+    override def cons(x: E, q: Repr[E, Q]): Repr[E, Q] = q match {
       case Repr(q1, f) => Repr(q1, x :: f)
     }
 
@@ -37,5 +37,5 @@ object OutputRestrictedDeque {
 }
 
 trait OutputRestrictedDeque[E, Q] extends Queue[E, Q] {
-  def cons(q: Q, e: E): Q
+  def cons(e: E, q: Q): Q
 }

@@ -12,6 +12,6 @@ abstract class OutputRestrictedDequeSpec[E, Q](ordeque: OutputRestrictedDeque[E,
     }
   }
 
-  def fromListReversed(xs: List[E]): Q = xs.foldLeft(ordeque.empty)(ordeque.cons)
+  def fromListReversed(xs: List[E]): Q = xs.foldLeft(ordeque.empty)((q: Q, e: E) => ordeque.cons(e, q))
 
 }

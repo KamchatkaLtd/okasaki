@@ -71,7 +71,7 @@ class RealTimeDeque[E](c: Int) extends Deque[E, Repr[E]] {
     case Repr(_, x #:: _, _, _, _, _) => x
   }
 
-  override def cons(q: Repr[E], x: E): Repr[E] = q match {
+  override def cons(x: E, q: Repr[E]): Repr[E] = q match {
     case Repr(lenf, f, sf, lenr, r, sr) => check(Repr(lenf + 1, x #:: f, exec1(sf), lenr, r, exec1(sr)))
   }
 

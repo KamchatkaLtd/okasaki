@@ -55,7 +55,7 @@ class BatchedDeque[E] extends Deque[E, Repr[E]] {
     case ((x :: _), _) => x
   }
 
-  override def cons(q: Repr[E], x: E): Repr[E] = q match {
+  override def cons(x: E, q: (List[E], List[E])): Repr[E] = q match {
     case (f, r) => checkr(x :: f, r)
   }
 

@@ -14,7 +14,7 @@ abstract class CatenableListSpec[E, CL](cl: CatenableList[E, CL]) extends Specif
 
   "A catenable list" should {
     "Maintain the order (R)" ! prop {
-      xs: List[E] =>
+        xs: List[E] =>
         val xs1 = drain(fromListR(xs))
         xs1 === xs
     }

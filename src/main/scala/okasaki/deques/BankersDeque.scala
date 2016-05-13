@@ -53,7 +53,7 @@ class BankersDeque[E](c: Int) extends Deque[E, Repr[E]] {
     case Repr(_, x #:: _, _, _) => x
   }
 
-  override def cons(q: Repr[E], x: E): Repr[E] = q match {
+  override def cons(x: E, q: Repr[E]): Repr[E] = q match {
     case Repr(lenf, f, lenr, r) => check(Repr(lenf + 1, x #:: f, lenr, r))
   }
 
