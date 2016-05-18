@@ -23,8 +23,8 @@ We'll track progress against an expanded version of Haskell code ToC (App. A):
  - [x] Real-time
 - [x] Catenable Lists
  - [x] Bootstrapped
-- [ ] Catenable Deques
- - [ ] Simple
+- [x] Catenable Deques
+ - [x] Simple
  - [ ] Implicit
 - [x] Random-Access Lists
  - [x] Binary
