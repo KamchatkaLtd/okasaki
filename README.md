@@ -1,8 +1,11 @@
-Okasaki/Scala ![build status](https://travis-ci.org/KamchatkaLtd/okasaki.svg)
+Okasaki/Scala
 =============
 
 The code here is a Scala implementation of data structures and solutions to exercises from the great book
  ["Purely Functional Data Structures" by Chris Okasaki](http://www.amazon.com/Purely-Functional-Structures-Chris-Okasaki/dp/0521663504).
+
+[![build status](https://travis-ci.org/KamchatkaLtd/okasaki.svg)](https://travis-ci.org/KamchatkaLtd/okasaki)
+[![codecov](https://codecov.io/gh/KamchatkaLtd/okasaki/branch/master/graph/badge.svg)](https://codecov.io/gh/KamchatkaLtd/okasaki)
 
 Progress
 --------
