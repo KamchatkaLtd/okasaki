@@ -6,18 +6,21 @@ package okasaki
  * Copyright (C) 2015-2016 Kamchatka Ltd
  */
 object FiniteMap {
+
   class NotFound[T](value: T) extends RuntimeException
+
 }
 
-trait FiniteMap[K, V] {
-  import FiniteMap._
+trait FiniteMap[K, V, M] {
 
-  def empty: FiniteMap[K, V]
+  import okasaki.FiniteMap._
 
-  def bind(k: K, v: V): FiniteMap[K, V]
+  def empty: M
+
+  def bind(k: K, v: V, m: M): M
 
   @throws[NotFound[K]]
-  def lookup(k: K): V
+  def lookup(k: K, m: M): V
 }
 
-trait StringMap[V] extends FiniteMap[String, V]
+trait StringMap[V, M] extends FiniteMap[String, V, M]

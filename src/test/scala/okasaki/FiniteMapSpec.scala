@@ -9,17 +9,17 @@ import scala.util.Try
 /**
  * Copyright (C) 2016 Kamchatka Ltd
  */
-abstract class FiniteMapSpec[K, V] extends Specification with ScalaCheck {
+abstract class FiniteMapSpec[K, V, M] extends Specification with ScalaCheck {
 
   implicit def keys: Arbitrary[K]
 
   implicit def elements: Arbitrary[V]
 
-  def map: FiniteMap[K, V]
+  def map: FiniteMap[K, V, M]
 
   "An empty map" should {
     "contain no keys" ! prop { k: K =>
-      map.empty.lookup(k) must throwA[FiniteMap.NotFound[K]]
+      map.lookup(k, map.empty) must throwA[FiniteMap.NotFound[K]]
     }
   }
 
@@ -33,7 +33,7 @@ abstract class FiniteMapSpec[K, V] extends Specification with ScalaCheck {
     "not contain extra elements" ! prop { (a: Map[K, V], e: K) =>
       val s = from(a)
 
-      Try(s.lookup(e)).isSuccess === a.get(e).isDefined
+      Try(map.lookup(e, s)).isSuccess === a.get(e).isDefined
     }
   }
 
@@ -42,19 +42,19 @@ abstract class FiniteMapSpec[K, V] extends Specification with ScalaCheck {
       val s = from(a)
 
       forall(a.keys) { k =>
-        shouldHaveTheSameElements(a + (k -> v), s.bind(k, v))
+        shouldHaveTheSameElements(a + (k -> v), map.bind(k, v, s))
       }
     }
   }
 
-  def shouldHaveTheSameElements(a: Map[K, V], s: FiniteMap[K, V]) = {
+  def shouldHaveTheSameElements(a: Map[K, V], s: M) = {
     forall(a) {
-      case (k, v) => s.lookup(k) === v
+      case (k, v) => map.lookup(k, s) === v
     }
   }
 
-  private def from(data: Map[K, V]): FiniteMap[K, V] =
+  private def from(data: Map[K, V]): M =
     data.foldLeft(map.empty) {
-      case (a, (k, v)) => a.bind(k, v)
+      case (a, (k, v)) => map.bind(k, v, a)
     }
 }
