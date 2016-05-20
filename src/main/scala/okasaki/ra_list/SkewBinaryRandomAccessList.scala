@@ -33,11 +33,13 @@ class SkewBinaryRandomAccessList[E] extends RandomAccessList[E, SkewList[E]] {
   }
 
   override def head: (SkewList[E]) => E = {
+    case Nil => throw new IllegalStateException("head called on an empty list")
     case (1, Leaf(x)) :: ts => x
     case (_, Node(x, _, _)) :: ts => x
   }
 
   override def tail: (SkewList[E]) => SkewList[E] = {
+    case Nil => throw new IllegalStateException("tail called on an empty list")
     case (1, Leaf(_)) :: ts => ts
     case (w, Node(_, t1, t2)) :: ts => (w / 2, t1) ::(w / 2, t2) :: ts
   }

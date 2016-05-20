@@ -41,12 +41,12 @@ object BootstrappedQueue {
   }
 
   def head[E](q: BQueue[E]): E = q match {
-    case Empty => throw new IllegalArgumentException("Called head() on an empty queue")
+    case Empty => throw new IllegalStateException("Called head() on an empty queue")
     case Q(_, x :: _, _, _, _) => x
   }
 
   def tail[E](q: BQueue[E]): BQueue[E] = q match {
-    case Empty => throw new IllegalArgumentException("Called tail() on an empty queue")
+    case Empty => throw new IllegalStateException("Called tail() on an empty queue")
     case Q(lenfm, x :: f1, m, lenr, r) => checkQ(lenfm - 1, f1, m.asInstanceOf[SuspQ[E]], lenr, r) // GATD skolem
   }
 }
