@@ -12,6 +12,15 @@ abstract class OutputRestrictedDequeSpec[E, Q](ordeque: OutputRestrictedDeque[E,
     }
   }
 
+  "An empty ordeque" should {
+    "allow cons" ! prop {
+      e: E =>
+        val q = ordeque.cons(e, ordeque.empty)
+        ordeque.head(q) === e
+    }
+  }
+
+
   def fromListReversed(xs: List[E]): Q = xs.foldLeft(ordeque.empty)((q: Q, e: E) => ordeque.cons(e, q))
 
 }

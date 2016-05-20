@@ -20,6 +20,26 @@ abstract class QueueSpec[E, Q](queue: Queue[E, Q]) extends Specification with Sc
     }
   }
 
+  "An empty queue" should {
+    "allow snoc" ! prop {
+      e: E =>
+        val q = queue.snoc(queue.empty, e)
+        queue.head(q) === e
+    }
+
+    "be empty for head" ! prop {
+      e: E =>
+        val q = queue.empty
+        queue.head(q) should throwAn[IllegalStateException]
+    }
+
+    "be empty for tail" ! prop {
+      e: E =>
+        val q = queue.empty
+        queue.tail(q) should throwAn[IllegalStateException]
+    }
+  }
+
   def fromList(xs: List[E]): Q =
     xs.foldLeft(queue.empty)(queue.snoc)
 

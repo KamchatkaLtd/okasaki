@@ -14,6 +14,21 @@ abstract class DequeSpec[E, Q](deque: Deque[E, Q]) extends OutputRestrictedDeque
     }
   }
 
+  "An empty deque" should {
+    "be empty for last" ! prop {
+      e: E =>
+        val q = deque.empty
+        deque.last(q) should throwAn[IllegalStateException]
+    }
+
+    "be empty for init" ! prop {
+      e: E =>
+        val q = deque.empty
+        deque.init(q) should throwAn[IllegalStateException]
+    }
+  }
+
+
   def drainReversed(q: Q): List[E] =
     iterate(q)(deque.init)
       .takeWhile(!deque.isEmpty(_))
