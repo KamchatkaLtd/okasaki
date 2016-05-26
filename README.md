@@ -28,7 +28,7 @@ We'll track progress against an expanded version of Haskell code ToC (App. A):
  - [x] Bootstrapped
 - [x] Catenable Deques
  - [x] Simple
- - [ ] Implicit
+ - [x] Implicit
 - [x] Random-Access Lists
  - [x] Binary
  - [x] Zeroless Binary

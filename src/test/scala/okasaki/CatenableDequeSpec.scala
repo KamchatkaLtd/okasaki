@@ -5,16 +5,6 @@ package okasaki
  */
 abstract class CatenableDequeSpec[E, Q](deque: CatenableDeque[E, Q]) extends DequeSpec(deque) {
   "A catenable deque" should {
-    "Maintain the order (R)" ! prop {
-      xs: List[E] =>
-        val xs1 = drain(fromListR(xs))
-        xs1 === xs
-    }
-    "Maintain the order (L)" ! prop {
-      xs: List[E] =>
-        val xs1 = drain(fromListL(xs))
-        xs1 === xs
-    }
     "Support concatenation (LL)" ! prop {
       (a: List[E], b: List[E]) =>
         val res = drain(deque.++(fromListL(a), fromListL(b)))
