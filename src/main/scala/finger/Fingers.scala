@@ -47,7 +47,7 @@ object Fingers {
     }
 
     override def reducel[A, B](fn: (B, A) => B): (B, Node[A]) => B = (z, na) => na match {
-      case Node2(a, b) => fn(z, fn(b, a))
+      case Node2(a, b) => fn(fn(z, b), a)
       case Node3(a, b, c) => fn(fn(fn(z, c), b), a)
     }
   }
