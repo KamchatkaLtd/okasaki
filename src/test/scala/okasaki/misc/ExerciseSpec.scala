@@ -5,7 +5,7 @@ import org.specs2.ScalaCheck
 import org.specs2.mutable.Specification
 
 /**
- * Copyright (C) 2015 Kamchatka Ltd
+ * Copyright (C) 2015-2019 Kamchatka Ltd
  */
 class ExerciseSpec extends Specification with ScalaCheck {
   "Complete set" should {
@@ -22,5 +22,5 @@ class ExerciseSpec extends Specification with ScalaCheck {
     }
   }
 
-  implicit val sizes = Arbitrary(Gen.chooseNum(0, 30))
+  implicit val sizes: Arbitrary[Int] = Arbitrary(Gen.chooseNum(0, 30))
 }

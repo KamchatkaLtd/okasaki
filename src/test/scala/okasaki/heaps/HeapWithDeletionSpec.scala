@@ -1,16 +1,16 @@
 package okasaki.heaps
 
 import okasaki.{HeapSpec, HeapWithDeletion, IntElements}
-import org.scalacheck.Arbitrary
+import org.scalacheck.{Arbitrary, Gen}
 import org.scalacheck.Arbitrary._
 import org.scalacheck.Gen._
 
 /**
- * Copyright (C) 2015 Kamchatka Ltd
+ * Copyright (C) 2015-2019 Kamchatka Ltd
  */
 class HeapWithDeletionSpec
   extends HeapSpec[Int, HeapWithDeletion[Int, SkewBinomialHeap[Int]]]
-  with IntElements {
+    with IntElements {
 
   def empty = new HeapWithDeletion(new SkewBinomialHeap[Int]())
 
@@ -38,6 +38,10 @@ class HeapWithDeletionSpec
   lazy implicit val listWithElement: Arbitrary[ListWithElement] =
     Arbitrary(for {
       xs <- arbitrary[List[Int]]
-      i <- choose(0, xs.size - 1)
+      if xs.nonEmpty
+      i <- indexIn(xs)
     } yield ListWithElement(xs, xs(i)))
+
+  private def indexIn(xs: List[Int]): Gen[Int] =
+    choose(0, Math.max(0, xs.size - 1))
 }
