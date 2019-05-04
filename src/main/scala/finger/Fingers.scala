@@ -14,7 +14,7 @@ object Fingers {
   case class Deep[A](l: Digit[A], down: FingerTree[Node[A]], r: Digit[A]) extends FingerTree[A]
 
   // ==========================================================================================
-  sealed trait Node[A]
+  sealed trait Node[+A]
 
   case class Node2[A](a: A, b: A) extends Node[A]
 
@@ -56,13 +56,34 @@ object Fingers {
     override def reducer[A, B](fn: (A, B) => B): (FingerTree[A], B) => B = (fta, z) => fta match {
       case Empty => z
       case Single(a) => fn(a, z)
-      case Deep(pr, m, sf) => ???
+      case Deep(pr, m, sf) =>
+        val fn1 = listReduce.reducer(fn)
+        val fn2 = fingerTreeReduce.reducer(nodeReduce.reducer(fn))
+        fn1(pr, fn2(m, fn1(sf, z)))
     }
 
     override def reducel[A, B](fn: (B, A) => B): (B, FingerTree[A]) => B = (z, fta) => fta match {
       case Empty => z
       case Single(a) => fn(z, a)
-      case Deep(pr, m, sf) => ???
+      case Deep(pr, m, sf) =>
+        val fn1 = listReduce.reducel(fn)
+        val fn2 = fingerTreeReduce.reducel(nodeReduce.reducel(fn))
+        fn1(fn2(fn1(z, pr), m), sf)
     }
+  }
+
+  // ==========================================================================================
+  def cons[A](a: A, ft: FingerTree[A]): FingerTree[A] = ft match {
+    case Empty => Single(a)
+    case Single(b) => Deep(List(a), Empty, List(b))
+    case Deep(List(b, c, d, e), m, sf) => Deep(List(a, b), cons(Node3(c, d, e), m), sf)
+    case Deep(pr, m, sf) => Deep(a :: pr, m, sf)
+  }
+
+  def snoc[A](ft: FingerTree[A], a: A): FingerTree[A] = ft match {
+    case Empty => Single(a)
+    case Single(b) => Deep(List(b), Empty, List(a))
+    case Deep(pr, m, List(b, c, d, e)) => Deep(pr, snoc(m, Node3(e, d, c)), List(a, b))
+    case Deep(pr, m, sf) => Deep(pr, m, a :: sf)
   }
 }
