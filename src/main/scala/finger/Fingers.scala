@@ -86,4 +86,54 @@ object Fingers {
     case Deep(pr, m, List(b, c, d, e)) => Deep(pr, snoc(m, Node3(e, d, c)), List(a, b))
     case Deep(pr, m, sf) => Deep(pr, m, a :: sf)
   }
+
+  def cons1[A, F[_] : Reduce](fa: F[A], fta: FingerTree[A]): FingerTree[A] =
+    implicitly[Reduce[F]].reducer[A, FingerTree[A]](cons)(fa, fta)
+
+  def snoc1[A, F[_] : Reduce](fta: FingerTree[A], fa: F[A]): FingerTree[A] =
+    implicitly[Reduce[F]].reducel[A, FingerTree[A]](snoc)(fta, fa)
+
+  def toTree[A, F[_] : Reduce](fa: F[A]): FingerTree[A] =
+    cons1(fa, Empty)
+
+  // ==========================================================================================
+  sealed trait ViewL[+S[_], +A]
+
+  case object NilL extends ViewL[Nothing, Nothing]
+
+  case class ConsL[+S[_], A](a: A, s: S[A]) extends ViewL[S, A]
+
+  def viewL[A](fta: FingerTree[A]): ViewL[FingerTree, A] = fta match {
+    case Empty => NilL
+    case Single(a) => ConsL(a, Empty)
+    case Deep(h :: t, m, sf) => ConsL(h, deepL(t, m, sf))
+  }
+
+  def deepL[A](pr: List[A], m: FingerTree[Fingers.Node[A]], sf: Fingers.Digit[A]): FingerTree[A] =
+    pr match {
+      case Nil => viewL(m) match {
+        case NilL => toTree(sf.reverse)
+        case ConsL(a, m1) => Deep(toList(a), m1, sf)
+      }
+      case _ => Deep(pr, m, sf)
+    }
+
+  // ==========================================================================================
+  def isEmpty(ft: FingerTree[_]): Boolean =
+    viewL(ft) match {
+      case NilL => true
+      case ConsL(_, _) => false
+    }
+
+  def head[A](ft: FingerTree[A]): A =
+    viewL(ft) match {
+      case NilL => sys.error("head() of an empty tree")
+      case ConsL(h, _) => h
+    }
+
+  def tail[A](ft: FingerTree[A]): FingerTree[A] =
+    viewL(ft) match {
+      case NilL => sys.error("tail() of an empty tree")
+      case ConsL(_, t) => t
+    }
 }
