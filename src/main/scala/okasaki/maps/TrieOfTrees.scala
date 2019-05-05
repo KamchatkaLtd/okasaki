@@ -43,7 +43,7 @@ object TrieOfTrees {
     val map = implicitly[FiniteMapLike[M]].ops[K, Trie[K, Trie[K, V, M], M]]
     k match {
       case E => t.copy(v = Some(v))
-      case T(x: K, l, r) =>
+      case T(x, l, r) =>
         val tt = Try(map.lookup(x, t.m)) getOrElse empty[K, Trie[K, V, M], M]
         val t1 = Try(lookup(l, tt)) getOrElse empty[K, V, M]
         val t2 = bind(r, v, t1)
