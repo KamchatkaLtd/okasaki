@@ -1,6 +1,6 @@
 package finger
 
-import okasaki.{DequeSpec, IntElements}
+import okasaki.{CatenableDequeSpec, IntElements}
 
-class FingerTreeDequeSpec extends DequeSpec(new FingerTreeDeque[Int])
+class FingerTreeDequeSpec extends CatenableDequeSpec(new FingerTreeDeque[Int])
   with IntElements

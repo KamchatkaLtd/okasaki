@@ -1,9 +1,9 @@
 package finger
 
 import finger.Fingers.{Empty, FingerTree}
-import okasaki.Deque
+import okasaki.CatenableDeque
 
-class FingerTreeDeque[E] extends Deque[E, FingerTree[E]] {
+class FingerTreeDeque[E] extends CatenableDeque[E, FingerTree[E]] {
   override def init(q: FingerTree[E]): FingerTree[E] = Fingers.init(q)
 
   override def last(q: FingerTree[E]): E = Fingers.last(q)
@@ -19,4 +19,6 @@ class FingerTreeDeque[E] extends Deque[E, FingerTree[E]] {
   override def head(q: FingerTree[E]): E = Fingers.head(q)
 
   override def tail(q: FingerTree[E]): FingerTree[E] = Fingers.tail(q)
+
+  override def ++(a: FingerTree[E], b: FingerTree[E]): FingerTree[E] = Fingers.concat(a, b)
 }
