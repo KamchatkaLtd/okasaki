@@ -3,7 +3,7 @@ package okasaki.sets
 import java.lang.Math._
 
 import okasaki.Set
-import okasaki.misc.Aux.log2
+import okasaki.misc.Misc.log2
 import okasaki.sets.RedBlackSet._
 
 /**

@@ -1,7 +1,7 @@
 package okasaki.misc
 
 /**
- * Copyright (C) 2015 Kamchatka Ltd
+ * Copyright (C) 2015-2019 Kamchatka Ltd
  */
 object Exercises {
 
@@ -21,7 +21,7 @@ object Exercises {
   }
 
   // ex 2.5b
-  def almostComplete[E](x: E, n: Int) = {
+  def almostComplete[E](x: E, n: Int): BinaryTree[E] = {
     def create2(x: E, m: Int): (BinaryTree[E], BinaryTree[E]) = m match {
       case 0 => (Empty, SubBinaryTree(Empty, x, Empty))
       case mm if mm > 0 =>

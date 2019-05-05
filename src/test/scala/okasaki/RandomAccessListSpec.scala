@@ -1,13 +1,13 @@
 package okasaki
 
-import org.scalacheck.Arbitrary
+import org.scalacheck.{Arbitrary, Gen}
 import org.scalacheck.Arbitrary._
 import org.scalacheck.Gen.choose
 import org.specs2.ScalaCheck
 import org.specs2.mutable.Specification
 
 /**
- * Copyright (C) 2015 Kamchatka Ltd
+ * Copyright (C) 2015-2019 Kamchatka Ltd
  */
 abstract class RandomAccessListSpec[E, RL, RAL <: RandomAccessList[E, RL]](val list: RAL)
   extends Specification with ScalaCheck {
@@ -51,13 +51,14 @@ abstract class RandomAccessListSpec[E, RL, RAL <: RandomAccessList[E, RL]](val l
     }
 
     "Random update is non-breaking" ! prop {
-      (xs: ListWithTwoIndices, e: E) => xs.distinct ==>  {
-        val ListWithTwoIndices(l, i, j) = xs
+      (xs: ListWithTwoIndices, e: E) =>
+        xs.distinct ==> {
+          val ListWithTwoIndices(l, i, j) = xs
 
-        val xs1 = list.update(i, e, fromList(l))
+          val xs1 = list.update(i, e, fromList(l))
 
-        list.lookup(j, xs1) === l(j)
-      }
+          list.lookup(j, xs1) === l(j)
+        }
     }
   }
 
@@ -71,13 +72,19 @@ abstract class RandomAccessListSpec[E, RL, RAL <: RandomAccessList[E, RL]](val l
   lazy implicit val listWithIndex: Arbitrary[ListWithIndex] =
     Arbitrary(for {
       xs <- arbitrary[List[E]]
-      i <- choose(0, xs.size - 1)
+      if xs.nonEmpty
+      i <- indexOf(xs)
     } yield ListWithIndex(xs, i))
 
   lazy implicit val listWithTwoDistinctIndexes: Arbitrary[ListWithTwoIndices] =
     Arbitrary(for {
       xs <- arbitrary[List[E]]
-      i <- choose(0, xs.size - 1)
-      j <- choose(0, xs.size - 1)
+      if xs.length >= 2
+      i <- indexOf(xs)
+      j <- indexOf(xs)
+      if i != j
     } yield ListWithTwoIndices(xs, i, j))
+
+  private def indexOf(xs: List[E]): Gen[Int] =
+    choose(0, Math.max(0, xs.size - 1))
 }
