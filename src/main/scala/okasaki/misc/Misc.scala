@@ -3,7 +3,7 @@ package okasaki.misc
 /**
  * Copyright (C) 2015 Kamchatka Ltd
  */
-object Aux {
+object Misc {
 
   def log2(x: Int): Int =
     if (x <= 1) 0
