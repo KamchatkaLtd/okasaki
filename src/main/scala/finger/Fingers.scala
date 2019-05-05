@@ -222,4 +222,26 @@ object Fingers {
       case NilR => throw new IllegalStateException("init() of an empty tree")
       case SnocR(t, _) => t
     }
+
+  // ==========================================================================================
+  def app3[A](fta: FingerTree[A], ts: List[A], ftb: FingerTree[A]): FingerTree[A] =
+    (fta, ftb) match {
+      case (Empty, xs) => cons1(ts, xs)
+      case (xs, Empty) => snoc1(xs, ts)
+      case (Single(x), xs) => cons(x, cons1(ts, xs))
+      case (xs, Single(x)) => snoc(snoc1(xs, ts), x)
+      case (Deep(pr1, m1, sf1), Deep(pr2, m2, sf2)) =>
+        Deep(pr1, app3(m1, nodes(toList(sf1) ++ ts ++ toList(pr2)), m2), sf2)
+    }
+
+  def nodes[A](xs: List[A]): List[Node[A]] = xs match {
+    case List(a, b) => List(Node2(a, b))
+    case List(a, b, c) => List(Node3(a, b, c))
+    case List(a, b, c, d) => List(Node2(a, b), Node2(c, d))
+    case a :: b :: c :: rest => Node3(a, b, c) :: nodes(rest)
+  }
+
+  def concat[A](xs: FingerTree[A], ys: FingerTree[A]): FingerTree[A] =
+    app3(xs, Nil, ys)
+
 }
