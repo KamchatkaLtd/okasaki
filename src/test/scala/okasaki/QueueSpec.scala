@@ -15,7 +15,8 @@ abstract class QueueSpec[E, Q](queue: Queue[E, Q]) extends Specification with Sc
   "A queue" should {
     "Maintain the order" ! prop {
       xs: List[E] =>
-        val xs1 = drain(fromList(xs))
+        val q = fromList(xs)
+        val xs1 = drain(q)
         xs1 === xs
     }
   }
